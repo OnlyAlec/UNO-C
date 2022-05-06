@@ -1,0 +1,62 @@
+{
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "Remove debug file",
+            "command": "rm ${fileBasenameNoExtension}.exe",
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "group": "build",
+            "detail": "File to remove!",
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "dedicated",
+                "showReuseMessage": true,
+                "clear": true
+            }
+        },
+        {
+            "type": "cppbuild",
+            "label": "C/C++: g++.exe compilar archivo activo",
+            "command": "C:/msys64/mingw64/bin/g++.exe",
+            "args": [
+                "-fdiagnostics-color=always",
+                "-g",
+                "${file}",
+                "-o",
+                "${fileDirname}\\${fileBasenameNoExtension}.exe"
+            ],
+            "options": {
+                "cwd": "C:/msys64/mingw64/bin"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build",
+            "detail": "compilador: C:/msys64/mingw64/bin/g++.exe"
+        },
+        {
+            "label": "GTK Builder",
+            "type": "shell",
+            "command": "'g++ -fdiagnostics-color=always -g ${command:extension.commandvariable.file.filePosix} -o ${command:extension.commandvariable.file.fileDirnamePosix}/${fileBasenameNoExtension}.exe `pkg-config --cflags --libs gtk+-3.0`'",
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "options": {
+                "shell": {
+                    "executable": "C:/msys64/msys2_shell.cmd",
+                    "args": [
+                        "-defterm",
+                        "-no-start",
+                        "-mingw64",
+                        "-c"
+                    ]
+                },
+            }
+        },
+    ],
+    "version": "2.0.0"
+}
