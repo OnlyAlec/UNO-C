@@ -1,4 +1,4 @@
-#include <gtk/gtk.h>
+
 
 // callback function which is called when button is clicked
 static void on_button_clicked(GtkButton *btn, gpointer data) {
