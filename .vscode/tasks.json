@@ -39,9 +39,28 @@
             "detail": "compilador: C:/msys64/mingw64/bin/g++.exe"
         },
         {
-            "label": "GTK Builder",
+            "label": "GTK+-3.0 Builder",
             "type": "shell",
-            "command": "'g++ -fdiagnostics-color=always -g ${command:extension.commandvariable.file.filePosix} -o ${command:extension.commandvariable.file.fileDirnamePosix}/${fileBasenameNoExtension}.exe `pkg-config --cflags --libs gtk+-3.0`'",
+            "command": "'g++ -fdiagnostics-color=always -g ${command:extension.commandvariable.file.filePosix} -o ${command:extension.commandvariable.file.fileDirnamePosix}/${fileBasenameNoExtension}.exe `pkg-config --cflags --libs gtk4`'",
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "options": {
+                "shell": {
+                    "executable": "C:/msys64/msys2_shell.cmd",
+                    "args": [
+                        "-defterm",
+                        "-no-start",
+                        "-mingw64",
+                        "-c"
+                    ]
+                },
+            }
+        },
+        {
+            "label": "GTK4 Builder",
+            "type": "shell",
+            "command": "'g++ -fdiagnostics-color=always -g $( pkg-config --cflags gtk4 ) -o ${command:extension.commandvariable.file.fileDirnamePosix}/${fileBasenameNoExtension} ${command:extension.commandvariable.file.filePosix} $( pkg-config --libs gtk4 )",
             "problemMatcher": [
                 "$gcc"
             ],
