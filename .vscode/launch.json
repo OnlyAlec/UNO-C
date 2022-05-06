@@ -12,6 +12,7 @@
             "program": "${fileDirname}\\${fileBasenameNoExtension}.exe",
             "args": [],
             "stopAtEntry": false,
+            // "cwd": "C:/msys64/mingw64/bin",
             "cwd": "${fileDirname}",
             "environment": [],
             "externalConsole": true,
@@ -28,7 +29,7 @@
             "postDebugTask": "Remove debug file"
         },
         {
-            "name": "C/C++ GTK Compilar archivo actual",
+            "name": "C/C++ GTK+-3.0 Compilar archivo actual",
             "type": "cppdbg",
             "request": "launch",
             "program": "${fileDirname}\\${fileBasenameNoExtension}.exe",
@@ -45,7 +46,28 @@
                     "ignoreFailures": true
                 }
             ],
-            "preLaunchTask": "GTK Builder",
+            "preLaunchTask": "GTK+-3.0 Builder",
+            "postDebugTask": "Remove debug file"
+        },
+        {
+            "name": "C/C++ GTK-4 Compilar archivo actual",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${fileDirname}\\${fileBasenameNoExtension}.exe",
+            "args": [],
+            "cwd": "${fileDirname}",
+            "environment": [],
+            "externalConsole": true,
+            "MIMode": "gdb",
+            "miDebuggerPath": "C:\\msys64\\mingw64\\bin\\gdb.exe",
+            "setupCommands": [
+                {
+                    "description": "Habilitar la impresión con sangría para gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "GTK4 Builder",
             "postDebugTask": "Remove debug file"
         }
     ]
