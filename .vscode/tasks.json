@@ -41,7 +41,7 @@
         {
             "label": "GTK+-3.0 Builder",
             "type": "shell",
-            "command": "'g++ -fdiagnostics-color=always -g ${command:extension.commandvariable.file.filePosix} -o ${command:extension.commandvariable.file.fileDirnamePosix}/${fileBasenameNoExtension}.exe `pkg-config --cflags --libs gtk4`'",
+            "command": "'g++ -fdiagnostics-color=always -g ${command:extension.commandvariable.file.filePosix} -o ${command:extension.commandvariable.file.fileDirnamePosix}/${fileBasenameNoExtension}.exe `pkg-config --cflags --libs gtk+-3.0`'",
             "problemMatcher": [
                 "$gcc"
             ],
