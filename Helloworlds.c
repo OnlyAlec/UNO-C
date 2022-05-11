@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
     gtk_window_set_title(GTK_WINDOW(window), "Image");
     gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
     gtk_container_set_border_width(GTK_CONTAINER(window),2);
-    image = gtk_image_new_from_file("imagenp2.jpg");
+    image = gtk_image_new_from_file("blue_0_large.png");
    
     gtk_container_add(GTK_CONTAINER(window), image);
     g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(gtk_main_quit), NULL);
@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
     gtk_window_set_title(GTK_WINDOW(window), "Image");
     gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
     gtk_container_set_border_width(GTK_CONTAINER(window),2);
-    image = gtk_image_new_from_file("prueba.jpg");
+    image = gtk_image_new_from_file("card_back_large.png");
    
     gtk_container_add(GTK_CONTAINER(window), image);
     g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(gtk_main_quit), NULL);
@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
 
     gtk_container_set_border_width(GTK_CONTAINER(window),2);
 
-    image = gtk_image_new_from_file("Carta_uno_reverse..jpg");
+    image = gtk_image_new_from_file("wild_colora_changer_large.png");
 
     gtk_container_add(GTK_CONTAINER(window), image);
 
