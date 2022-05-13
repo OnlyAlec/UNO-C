@@ -66,34 +66,31 @@ static void
 change_c (GtkWidget *widget,
           gpointer   data)
 {
+  GError *error = NULL;
   GtkBuilder* builder = gtk_builder_new ();
-  gtk_builder_add_from_file (builder, "Glade/UI-Card.glade", NULL);
-  GObject* window = gtk_builder_get_object (builder, "window");
+  if (gtk_builder_add_from_file (builder, "XML/UI-Cardv.2.glade", &error) == 0)
+    {
+      g_printerr ("Error loading file: %s\n", error->message);
+      g_clear_error (&error);
+      system("pause");
+    }
+
+  GObject* dialog = gtk_builder_get_object (builder, "NoCards");
+  gtk_builder_connect_signals(builder, NULL);
 
   const gchar* accionName = gtk_widget_get_name (widget);
-  g_print ("Cambiando Carta - %s\n", accionName);
+  g_print ("Cambiando Carta - %s - #%d\n", accionName, cardNum);
 
-  if (strcmp(accionName, "Despues") == 0 && cardNum >= 0) {
+  if (strcmp(accionName, "Despues") == 0 && cardNum < 55) {
     cardNum++;
     gtk_image_set_from_file(GTK_IMAGE(data), image_names[cardNum]);
-  } else if (!(cardNum == 0)) {
+  } else if (strcmp(accionName, "Antes") == 0 && cardNum > 0) {
     cardNum--;
     gtk_image_set_from_file(GTK_IMAGE(data), image_names[cardNum]);
   } else {
     g_print ("No hay mas cartas!\n");
-    gtk_image_set_from_file(GTK_IMAGE(data), NULL);
-    GtkDialogFlags flags = GTK_DIALOG_DESTROY_WITH_PARENT;
-    GtkWidget* dialog = gtk_message_dialog_new (GTK_WINDOW(window),
-                                  flags,
-                                  GTK_MESSAGE_ERROR,
-                                  GTK_BUTTONS_CLOSE,
-                                  "No hay mas cartas!");
 
- // Destroy the dialog when the user responds to it
- // (e.g. clicks a button)
- g_signal_connect_swapped (dialog, "response",
-                           G_CALLBACK (gtk_widget_destroy),
-                           dialog);
+    gtk_widget_show_all (GTK_WIDGET(dialog));
   }
 }
 
@@ -101,7 +98,7 @@ int main (int   argc,
       char *argv[])
 {
   GtkBuilder *builder;
-  GObject *window, *button, *img;
+  GObject *window, *button, *img, *dialog;
   GError *error = NULL;
   gchar *filename;
 
@@ -109,7 +106,7 @@ int main (int   argc,
 
   /*   Integracion de XML    */
   builder = gtk_builder_new ();
-  if (gtk_builder_add_from_file (builder, "Glade/UI-Card.glade", &error) == 0)
+  if (gtk_builder_add_from_file (builder, "XML/UI-Cardv.2.glade", &error) == 0)
     {
       g_printerr ("Error loading file: %s\n", error->message);
       g_clear_error (&error);
@@ -118,21 +115,23 @@ int main (int   argc,
     }
 
   /*   Conexion de señales    */
-  img = gtk_builder_get_object (builder, "image1");
-  // g_signal_connect (img, "draw", G_CALLBACK (get_file), &filename);
-
-
-  window = gtk_builder_get_object (builder, "window");
+    /* Ventana Principal*/
+  window = gtk_builder_get_object (builder, "main");
   g_signal_connect (window, "destroy", G_CALLBACK (gtk_main_quit), NULL);
+      /* Generales */
+  gtk_builder_connect_signals(builder, NULL);
 
-  button = gtk_builder_get_object (builder, "button1");
+    /* Individuakes */
+  img = gtk_builder_get_object (builder, "img_card");
+  button = gtk_builder_get_object (builder, "c_antes");
   g_signal_connect (button, "clicked", G_CALLBACK (change_c), img);
-  gtk_widget_set_name (GTK_WIDGET(button), "Antes");
+  // gtk_widget_set_name (GTK_WIDGET(button), "Antes");
 
-  button = gtk_builder_get_object (builder, "button2");
+  button = gtk_builder_get_object (builder, "c_despues");
   g_signal_connect (button, "clicked", G_CALLBACK (change_c), img);
-  gtk_widget_set_name (GTK_WIDGET(button), "Despues");
+  // gtk_widget_set_name (GTK_WIDGET(button), "Despues");
 
+  gtk_widget_show(GTK_WIDGET(window));
   gtk_main ();
 
   return 0;
