@@ -24,7 +24,7 @@ static void on_app_activate(GApplication *app, gpointer data)
     gtk_widget_show_all(GTK_WIDGET(window));
 }
 
-int main(int argc, char *argv[]) 
+int main(int argc, char *argv[])
 {
     // create new GtkApplication with an unique application ID
     GtkApplication *app = gtk_application_new(
@@ -55,14 +55,14 @@ int main(int argc, char *argv[])
 
     gtk_container_set_border_width(GTK_CONTAINER(window),2);
 
-    image = gtk_image_new_from_file("imagenp2.jpg");
-   
+    image = gtk_image_new_from_file("etc/img/imagenp2.jpg");
+
     gtk_container_add(GTK_CONTAINER(window), image);
 
     g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(gtk_main_quit), NULL);
     gtk_widget_show_all(window);
     gtk_main();
-    
+
      gtk_init(&argc, &argv);
 
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
@@ -74,8 +74,8 @@ int main(int argc, char *argv[])
 
     gtk_container_set_border_width(GTK_CONTAINER(window),2);
 
-    image = gtk_image_new_from_file("prueba.jpg");
-   
+    image = gtk_image_new_from_file("etc/img/prueba.jpg");
+
     gtk_container_add(GTK_CONTAINER(window), image);
 
     g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(gtk_main_quit), NULL);
@@ -91,16 +91,13 @@ int main(int argc, char *argv[])
 
     gtk_container_set_border_width(GTK_CONTAINER(window),2);
 
-    image = gtk_image_new_from_file("os.jpeg");
-   
+    image = gtk_image_new_from_file("etc/img/os.jpeg");
+
     gtk_container_add(GTK_CONTAINER(window), image);
 
     g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(gtk_main_quit), NULL);
     gtk_widget_show_all(window);
     gtk_main();
-
-    
-
 
     return status;
 }
