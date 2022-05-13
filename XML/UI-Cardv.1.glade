@@ -3,10 +3,11 @@
   <!-- interface-requires gtk+ 3.0 -->
   <object class="GtkWindow" id="window">
     <property name="title" translatable="yes">Prueba de Cartas</property>
-    <property name="resizable">False</property>
-    <property name="window_position">center-always</property>
+    <property name="resizable">True</property>
     <property name="visible">True</property>
-    <property name="border-width">10</property>
+    <!-- <property name="border-width">10</property> -->
+    <property name="default-width">600</property>
+    <property name="default-height">300</property>
     <child>
       <object class="GtkBox" id="box1">
         <property name="visible">True</property>
@@ -16,7 +17,7 @@
           <object class="GtkImage" id="image1">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="pixbuf">../img/PNGs/large/blue_0_large.png</property>
+            <property name="pixbuf">../img/PNGs/small/blue_0.png</property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -31,8 +32,7 @@
             <property name="homogeneous">True</property>
             <child>
               <object class="GtkButton" id="button1">
-                <property name="label" translatable="yes">Anterior Carta
-</property>
+                <property name="label" translatable="yes">Anterior Carta</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
