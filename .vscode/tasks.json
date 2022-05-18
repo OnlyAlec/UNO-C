@@ -15,7 +15,8 @@
                 "focus": false,
                 "panel": "dedicated",
                 "showReuseMessage": true,
-                "clear": true
+                "clear": true,
+                "close": true
             }
         },
         {
@@ -23,6 +24,7 @@
             "label": "C/C++: g++.exe compilar archivo activo",
             "command": "C:/msys64/mingw64/bin/g++.exe",
             "args": [
+                "-Wall",
                 "-fdiagnostics-color=always",
                 "-g",
                 "${file}",
@@ -41,7 +43,7 @@
         {
             "label": "GTK+-3.0 Builder",
             "type": "shell",
-            "command": "'g++ -fdiagnostics-color=always -g ${command:extension.commandvariable.file.filePosix} -o ${command:extension.commandvariable.file.fileDirnamePosix}/${fileBasenameNoExtension}.exe `pkg-config --cflags --libs gtk+-3.0`'",
+            "command": "'gcc -fdiagnostics-color=always -g -Wl,--export-all-symbols ${command:extension.commandvariable.file.filePosix} -o ${command:extension.commandvariable.file.fileDirnamePosix}/${fileBasenameNoExtension}.exe `pkg-config --cflags --libs gtk+-3.0 gstreamer-1.0 gstreamer-video-1.0`'",
             "problemMatcher": [
                 "$gcc"
             ],
@@ -60,7 +62,7 @@
         {
             "label": "GTK4 Builder",
             "type": "shell",
-            "command": "'g++ -fdiagnostics-color=always -g $( pkg-config --cflags gtk4 ) -o ${command:extension.commandvariable.file.fileDirnamePosix}/${fileBasenameNoExtension} ${command:extension.commandvariable.file.filePosix} $( pkg-config --libs gtk4 )",
+            "command": "'gcc -fdiagnostics-color=always -g -Wl,--export-all-symbols $( pkg-config --cflags gtk4 ) -o ${command:extension.commandvariable.file.fileDirnamePosix}/${fileBasenameNoExtension} ${command:extension.commandvariable.file.filePosix} `pkg-config --cflags --libs gtk4 gstreamer-1.0`",
             "problemMatcher": [
                 "$gcc"
             ],
