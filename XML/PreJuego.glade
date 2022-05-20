@@ -2,129 +2,7 @@
 <!-- Generated with glade 3.38.2 -->
 <interface>
   <requires lib="gtk+" version="3.24"/>
-  <object class="GtkWindow">
-    <property name="can-focus">False</property>
-    <property name="default-width">1280</property>
-    <property name="default-height">720</property>
-    <child>
-      <object class="GtkLayout">
-        <property name="width-request">1280</property>
-        <property name="height-request">720</property>
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="width">1280</property>
-        <property name="height">720</property>
-        <child>
-          <object class="GtkImage" id="BG-Img">
-            <property name="width-request">1280</property>
-            <property name="height-request">664</property>
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
-            <property name="pixbuf">..\assets\backgrounds\Selecciones.png</property>
-          </object>
-        </child>
-        <child>
-          <object class="GtkButton" id="GameLocal">
-            <property name="width-request">239</property>
-            <property name="height-request">90</property>
-            <property name="visible">True</property>
-            <property name="can-focus">True</property>
-            <property name="receives-default">True</property>
-            <property name="always-show-image">True</property>
-            <child>
-              <object class="GtkBox">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="spacing">5</property>
-                <child>
-                  <object class="GtkImage" id="local">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="pixbuf">..\assets\icons\singlePlayer.png</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkLabel">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="label" translatable="yes">Modo Local</property>
-                    <property name="single-line-mode">True</property>
-                    <attributes>
-                      <attribute name="weight" value="bold"/>
-                      <attribute name="scale" value="2"/>
-                    </attributes>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
-              </object>
-            </child>
-          </object>
-          <packing>
-            <property name="x">520</property>
-            <property name="y">200</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkButton" id="GameMult">
-            <property name="height-request">90</property>
-            <property name="visible">True</property>
-            <property name="can-focus">True</property>
-            <property name="receives-default">True</property>
-            <property name="always-show-image">True</property>
-            <child>
-              <object class="GtkBox">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="spacing">5</property>
-                <child>
-                  <object class="GtkImage" id="multiplayer">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="pixbuf">..\assets\icons\multiplayer.png</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkLabel">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="label" translatable="yes">Modo Multijugador</property>
-                    <attributes>
-                      <attribute name="weight" value="bold"/>
-                      <attribute name="scale" value="2"/>
-                    </attributes>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
-              </object>
-            </child>
-          </object>
-          <packing>
-            <property name="x">475</property>
-            <property name="y">400</property>
-          </packing>
-        </child>
-      </object>
-    </child>
-  </object>
-  <object class="GtkWindow">
+  <object class="GtkWindow" id="ProfileBuild">
     <property name="can-focus">False</property>
     <property name="default-width">1280</property>
     <property name="default-height">720</property>
@@ -353,7 +231,129 @@
       </object>
     </child>
   </object>
-  <object class="GtkWindow">
+  <object class="GtkWindow" id="SelectMode">
+    <property name="can-focus">False</property>
+    <property name="default-width">1280</property>
+    <property name="default-height">720</property>
+    <child>
+      <object class="GtkLayout">
+        <property name="width-request">1280</property>
+        <property name="height-request">720</property>
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <property name="width">1280</property>
+        <property name="height">720</property>
+        <child>
+          <object class="GtkImage" id="BG-Img">
+            <property name="width-request">1280</property>
+            <property name="height-request">664</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="pixbuf">..\assets\backgrounds\Selecciones.png</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="GameLocal">
+            <property name="width-request">239</property>
+            <property name="height-request">90</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <property name="always-show-image">True</property>
+            <child>
+              <object class="GtkBox">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="spacing">5</property>
+                <child>
+                  <object class="GtkImage" id="local">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="pixbuf">..\assets\icons\singlePlayer.png</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="label" translatable="yes">Modo Local</property>
+                    <property name="single-line-mode">True</property>
+                    <attributes>
+                      <attribute name="weight" value="bold"/>
+                      <attribute name="scale" value="2"/>
+                    </attributes>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="x">520</property>
+            <property name="y">200</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="GameMult">
+            <property name="height-request">90</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <property name="always-show-image">True</property>
+            <child>
+              <object class="GtkBox">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="spacing">5</property>
+                <child>
+                  <object class="GtkImage" id="multiplayer">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="pixbuf">..\assets\icons\multiplayer.png</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="label" translatable="yes">Modo Multijugador</property>
+                    <attributes>
+                      <attribute name="weight" value="bold"/>
+                      <attribute name="scale" value="2"/>
+                    </attributes>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="x">475</property>
+            <property name="y">400</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkWindow" id="SelectPlayer">
     <property name="can-focus">False</property>
     <property name="default-width">1280</property>
     <property name="default-height">720</property>
@@ -386,7 +386,6 @@
               <object class="GtkImage" id="Bot">
                 <property name="width-request">150</property>
                 <property name="height-request">150</property>
-                <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <property name="pixbuf">..\assets\icons\Bot.png</property>
               </object>
@@ -397,7 +396,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkImage" id="Human">
+              <object class="GtkImage">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
               </object>
@@ -408,8 +407,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkImage">
-                <property name="visible">True</property>
+              <object class="GtkImage" id="Human">
                 <property name="can-focus">False</property>
                 <property name="pixbuf">..\assets\icons\Human.png</property>
               </object>
