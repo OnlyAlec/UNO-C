@@ -35,7 +35,6 @@ static void activate(GtkApplication *app, gpointer user_data) {
     g_clear_error (&error);
     system("pause");
   }
-
   /*   Conexion de señales    */
     /* Ventana Principal */
   window = gtk_builder_get_object (builder, "main");

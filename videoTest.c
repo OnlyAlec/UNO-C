@@ -3,80 +3,125 @@
 #include <gst/video/videooverlay.h>
 #include <gdk/gdkwin32.h>
 
-static GstElement *playbin;
-static guintptr window_handle = 0;
+static GstElement *playbin, *play, *sink;
 
-static void report_error(GstBus *playbin_bus, GstMessage *error_message, gpointer user_data) {
-    GError *error;
-    gchar *debug_info;
-    gst_message_parse_error(error_message, &error, &debug_info);
-    g_printerr("Error received from element %s: %s\n", GST_OBJECT_NAME(error_message->src), error->message);
-    g_printerr("Debugging information: %s\n", debug_info ? debug_info : "none");
-    g_clear_error(&error);
-    g_free(debug_info);
+void TESTING();
+
+char* fullPath( char * partialPath )
+{
+  int i=0;
+  char temp[_MAX_PATH], *full = &temp[0];
+  if( _fullpath( full, partialPath, _MAX_PATH ) != NULL ){
+    g_print( "Ruta completa Windows: %s\n", full);
+      while (full[i]!='\0') {
+        if(full[i]=='\\')
+          full[i]='/';
+        i++;
+      }
+    g_print( "Ruta completa Linux: %s\n", full);
+    return full;
+  }
+  else{
+     g_print( "Ruta Invalida\n" );
+     return NULL;
+  }
 }
 
-static GstBusSyncReply prepare_window_handle(GstBus *bus, GstMessage *message, GstPipeline * pipeline) {
-    if (!gst_is_video_overlay_prepare_window_handle_message(message)) {
-        return GST_BUS_PASS;
-    }
-    g_assert(window_handle != 0);
-    gst_video_overlay_set_window_handle(GST_VIDEO_OVERLAY(playbin), window_handle);
-    gst_message_unref(message);
-    return GST_BUS_DROP;
+gboolean bus_callback(GstBus *bus, GstMessage *msg, gpointer data) {
+  GstElement *play = GST_ELEMENT(data);
+  switch (GST_MESSAGE_TYPE(msg))
+  {
+  case GST_MESSAGE_EOS:
+      /* Repite si llega al final con un EOF */
+      if (!gst_element_seek(play,
+                  1.0, GST_FORMAT_TIME, GST_SEEK_FLAG_FLUSH,
+                  GST_SEEK_TYPE_SET,  2000000000, //2 seg
+                  GST_SEEK_TYPE_NONE, GST_CLOCK_TIME_NONE)) {
+          g_print("Seek failed!\n");
+      }
+      break;
+  default:
+      break;
+  }
+  return TRUE;
 }
 
-static void realize_video_drawing_area(GtkWidget *video_drawing_area, gpointer user_data) {
-    GdkWindow *video_window = gtk_widget_get_window(video_drawing_area);
-    if (!gdk_window_ensure_native(video_window)) {
-        g_error("Couldn't create native window needed for GstVideoOverlay!");
-    }
-    window_handle = (guintptr) GDK_WINDOW_HWND(video_window);
+static void SEXOO(GtkButton *button, gpointer user_data){
+    g_print("HOLA SEXO?");
 }
 
-static void play(GtkButton *play_button, gpointer user_data) {
-    gst_element_set_state(playbin, GST_STATE_PLAYING);
-}
 
 static void activate(GtkApplication *app, gpointer user_data) {
 
     GtkWidget *window = gtk_application_window_new(app);
-
     GtkWidget *root_pane = gtk_overlay_new();
-    gtk_container_add(GTK_CONTAINER(window), root_pane);
-
     GtkWidget *video_drawing_area = gtk_drawing_area_new();
+    GtkWidget *opt1 = gtk_image_new_from_file("assets\\SelectCards\\SelectCard_1.png");
+    GtkWidget *Logo = gtk_image_new_from_file ("assets\\logos\\RetroUno_W.png");
+    gtk_container_add(GTK_CONTAINER(window), root_pane);
+  
+    g_object_get (sink, "widget", &video_drawing_area, NULL);
+    gtk_widget_set_size_request(video_drawing_area, 1280, 720);
     gtk_container_add(GTK_CONTAINER(root_pane), video_drawing_area);
-    gtk_widget_set_size_request(video_drawing_area, 800, 600);
-    gtk_widget_set_double_buffered(video_drawing_area, FALSE);
-    g_signal_connect(video_drawing_area, "realize", G_CALLBACK(realize_video_drawing_area), NULL);
+    ///g_signal_connect(video_drawing_area, "realize", G_CALLBACK(realize_video_drawing_area), NULL);
 
-    GtkWidget *play_button = gtk_button_new_with_label("Play");
-    gtk_overlay_add_overlay(GTK_OVERLAY(root_pane), play_button);
-    gtk_widget_set_halign(play_button, GTK_ALIGN_END);
-    gtk_widget_set_valign(play_button, GTK_ALIGN_END);
-    gtk_widget_set_margin_end(play_button, 20);
-    gtk_widget_set_margin_bottom(play_button, 20);
-    g_signal_connect(G_OBJECT(play_button), "clicked", G_CALLBACK(play), NULL);
 
+    gtk_overlay_add_overlay(GTK_OVERLAY(root_pane), opt1);
+    gtk_overlay_add_overlay(GTK_OVERLAY(root_pane), Logo);
+    
+    gtk_widget_set_halign(opt1, GTK_ALIGN_START);
+    gtk_widget_set_valign(opt1, 50);
+
+    gtk_widget_set_halign(Logo, GTK_ALIGN_CENTER);
+    gtk_widget_set_valign(Logo, GTK_ALIGN_BASELINE);
+    
+    gtk_widget_set_margin_end(opt1, 50);
+    gtk_widget_set_margin_bottom(opt1, 200);
+
+
+    gtk_widget_set_margin_end(Logo, 0);
+    gtk_widget_set_margin_bottom(Logo, 600);  
+
+    gst_element_set_state (play, GST_STATE_PLAYING);
     gtk_widget_show_all(window);
 
 }
 
 int main(int argc, char **argv) {
 
-    gst_init(&argc, &argv);
-    playbin = gst_element_factory_make("playbin", NULL);
-    g_object_set(playbin, "uri", "http://techslides.com/demos/sample-videos/small.ogv", NULL);
-    GstBus *playbin_bus = gst_element_get_bus(playbin);
-    gst_bus_enable_sync_message_emission(playbin_bus);
-    gst_bus_set_sync_handler(playbin_bus, (GstBusSyncHandler) prepare_window_handle, NULL, NULL);
-    gst_bus_add_signal_watch(playbin_bus);
-    g_signal_connect(playbin_bus, "message::error", G_CALLBACK(report_error), NULL);
-    gst_object_unref(playbin_bus);
+    GMainLoop *loop;
+    GstBus *bus;
+    char file[_MAX_PATH] = "file:///";
+    strcat(file, fullPath("assets\\backgrounds\\blue.mp4"));
+    gtk_init (&argc, &argv);
+    gst_init (&argc, &argv);
+    loop = g_main_loop_new (NULL, FALSE);
+    
+
+      play = gst_element_factory_make ("playbin", "play");
+    g_object_set (G_OBJECT (play), "uri", file, NULL);
+
+    sink = gst_element_factory_make ("gtksink", NULL);
+    g_object_set(play, "video-sink", sink, NULL);
+
+
+      bus = gst_pipeline_get_bus (GST_PIPELINE (play));
+      gst_bus_add_watch (bus, bus_callback, play);
+      gst_object_unref (bus);
 
     GtkApplication *app = gtk_application_new("com.techn.videotest", G_APPLICATION_FLAGS_NONE);
     g_signal_connect(app, "activate", G_CALLBACK(activate), NULL);
-    return g_application_run(G_APPLICATION(app), argc, argv);
 
+    g_application_run(G_APPLICATION(app), argc, argv);
+
+    gst_element_set_state (play, GST_STATE_NULL);
+    gst_object_unref (GST_OBJECT (play));
+    system("pause");
+    return 0;
+}
+
+
+void TESTING(){
+  g_print("\nDISCULPE DULCE DAMISELA, SERIA TAN AMABLE DE USAR MI ROSTRO COMO OBJETO DE REPOSO PARA SU ABUNDANTE RETAGUARIDA :)\n");
+  // xD?
 }
