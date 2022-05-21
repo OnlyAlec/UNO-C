@@ -77,7 +77,7 @@ int main(int argc, char **argv) {
   GstBus *bus;
 
   char file[_MAX_PATH] = "file:///";
-  strcat(file, fullPath("..\\..\\assets\\backgrounds\\blue.mp4"));
+  strcat(file, fullPath("..\\..\\assets\\backgrounds\\Blue.mp4"));
 
   /* init GStreamer */
   gtk_init (&argc, &argv);

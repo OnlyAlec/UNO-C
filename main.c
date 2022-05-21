@@ -19,8 +19,9 @@ GstElement *sink;
 
 /*   Funciones   */
 void motionCardMovement();
-void menuhowPlay();
-void menuPlay();
+void menuhowPlay(GObject *, gpointer);
+void Objetivo(GObject *, GtkBuilder*);
+void menuPlay(GObject *, gpointer);
 void menuLocal(GObject *, GtkBuilder* );
 void profiles(GObject *, GtkBuilder* );
 void playerSelectFn(GObject *, GtkBuilder* );
@@ -87,7 +88,8 @@ int main (int argc, char *argv[]) {
   GstBus *bus;
 
   char file[_MAX_PATH] = "file:///";
-  strcat(file, fullPath("..\\..\\assets\\backgrounds\\blue.mp4"));
+  strcat(file, fullPath("..\\..\\assets\\backgrounds\\Blue.mp4"));
+
   /*   init GTK && GTS   */
   gtk_init (&argc, &argv);
   gst_init (&argc, &argv);
@@ -162,8 +164,47 @@ gboolean bus_callback(GstBus *bus, GstMessage *msg, gpointer data) {
 void motionCardMovement(){
   g_print("Motion on Card Triggered!");
 }
-void menuhowPlay(){
+void menuhowPlay(GObject *buttonInit, gpointer user_data)
+{
   g_print("Ventana de como jugar - como child!");
+  GtkBuilder *builder;
+  GdkWindow *windowClose;
+  GError *error = NULL;
+
+  /*   Cierre de ventana   */
+  // FIXME: No se cierra la ventana anterior
+  windowClose = gtk_widget_get_window(GTK_WIDGET(buttonInit));
+  gdk_window_destroy (windowClose);
+  g_print("Se cerro ventana principal!");
+
+  /*   Integracion del XML   */
+  builder = gtk_builder_new ();
+  if (gtk_builder_add_from_file (builder, "XML/ComoJugar.glade", &error) == 0) {
+    g_printerr ("Error loading file: %s\n", error->message);
+    g_clear_error (&error);
+    system("pause");
+  }
+
+  void Objetivo(GObject *buttonInit, GtkBuilder* builder)
+  {
+    
+  }
+
+  /*   Obtencion de Objetos   */
+  GtkWidget *window;
+  GObject *button;
+  /*   Ventanas   */
+  window = GTK_WIDGET(gtk_builder_get_object (builder, "SelectMode"));
+  g_signal_connect (window, "destroy", G_CALLBACK (gtk_main_quit), NULL);
+  /*   Generales   */
+  gtk_builder_connect_signals(builder, NULL);
+  /*   Botones   */
+  button = gtk_builder_get_object (builder, "Objetivo");
+  g_signal_connect (button, "clicked", G_CALLBACK (Objetivo), builder);
+  button = gtk_builder_get_object (builder, "Instrucciones");
+  // g_signal_connect (button, "clicked", G_CALLBACK (menuMult), builder);
+
+  gtk_widget_show_all(GTK_WIDGET(window));
 
 }
 void menuPlay(GObject *buttonInit, gpointer user_data){

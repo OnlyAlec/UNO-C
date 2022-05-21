@@ -17,7 +17,7 @@
           <object class="GtkImage" id="image1">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="pixbuf">../assets/small/blue_0.png</property>
+            <property name="pixbuf">../assets/MainCards/small/blue_0.png</property>
           </object>
           <packing>
             <property name="expand">False</property>
