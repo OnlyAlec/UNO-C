@@ -267,7 +267,7 @@ void menuLocal(GObject *buttonInit, GtkBuilder* builder){
   GtkWidget *window;
 
   window = GTK_WIDGET(gtk_builder_get_object (builder, "SelectPlayer"));
-  g_signal_connect (window, "destroy", G_CALLBACK (gtk_main_quit), NULL);
+  // g_signal_connect (window, "destroy", G_CALLBACK (gtk_main_quit), NULL);
 
   // TODO: Pasar los eventos a una caja de eventos
   Eventimg = gtk_builder_get_object (builder, "1P");
@@ -304,7 +304,7 @@ void profiles(GObject *buttonInit, GtkBuilder* builder){
 
   GtkWidget *window;
   window = GTK_WIDGET(gtk_builder_get_object (builder, "ProfileBuild"));
-  g_signal_connect (window, "destroy", G_CALLBACK (gtk_main_quit), NULL);
+  // g_signal_connect (window, "destroy", G_CALLBACK (gtk_main_quit), NULL);
 
   /*  Repeticion de ventana   */
   /* Necesito la estructura de datos globales para poder hacer el ciclo de la funcion */
