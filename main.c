@@ -19,17 +19,22 @@ GstElement *sink;
 
 /*   Funciones   */
 void motionCardMovement();
-void menuhowPlay(GObject *, gpointer);
-void Objetivo(GObject *, GtkBuilder*);
-void menuPlay(GObject *, gpointer);
-void menuLocal(GObject *, GtkBuilder* );
 void profiles(GObject *, GtkBuilder* );
 void playerSelectFn(GObject *, GtkBuilder* );
 void SelectVSFn(GObject *, GtkBuilder* );
+char* fullPath(char *);
+gboolean bus_callback(GstBus *, GstMessage *, gpointer);
+
+// Menus
+void menuPlay(GObject *, gpointer);
+void menuhowPlay(GObject *, gpointer);
+void menuInstruc(GObject*, GtkBuilder* );
+void menuObj(GObject*, GtkBuilder* );
+void menuLocal(GObject *, GtkBuilder* );
 
 static void activate(GtkApplication *app, gpointer user_data) {
   GtkBuilder *builder;
-  GObject *button, *img, *box, *event, *fixed;
+  GObject *button, *box, *event, *fixed;
   GtkWidget *draw;
   GError *error = NULL;
 
@@ -47,8 +52,8 @@ static void activate(GtkApplication *app, gpointer user_data) {
   //     /* Generales */
   gtk_builder_connect_signals(builder, NULL);
     /*   Individuales Cajas   */
-  draw = GTK_WIDGET(gtk_builder_get_object (builder, "bg-video"));
-  g_object_get (sink, "widget", &draw, NULL);
+  // draw = GTK_WIDGET(gtk_builder_get_object (builder, "bg-video"));
+  // g_object_get (sink, "widget", &draw, NULL);
 
   box = gtk_builder_get_object (builder, "Profile");
   fixed = gtk_builder_get_object (builder, "mainFixed");
@@ -72,14 +77,8 @@ static void activate(GtkApplication *app, gpointer user_data) {
   g_signal_connect (event, "button-release-event", G_CALLBACK (menuhowPlay), NULL);
 
   gtk_widget_show_all(GTK_WIDGET(windowMain));
-  // El comando no existe?
-  // gtk_object_unref (builder);
+  g_object_unref (builder);
 }
-
-char* fullPath(char *);
-gboolean bus_callback(GstBus *, GstMessage *, gpointer);
-// void startVideoBG(GObject *, gpointer);
-
 
 int main (int argc, char *argv[]) {
   GMainLoop *loop;
@@ -155,84 +154,94 @@ gboolean bus_callback(GstBus *bus, GstMessage *msg, gpointer data) {
   return TRUE;
 }
 
-// void startVideoBG(GObject *video_drawing_area, gpointer user_data) {
-//   // g_object_get (sink, "widget", &video_drawing_area, NULL);
-//   gtk_widget_set_size_request(GTK_WIDGET(video_drawing_area), 970, 577);
-// }
-
 void motionCardMovement(){
   g_print("Motion on Card Triggered!");
 }
-void menuhowPlay(GObject *buttonInit, gpointer user_data)
-{
-  g_print("Ventana de como jugar - como child!");
-  GtkBuilder *builder;
-  GdkWindow *windowClose;
-  GError *error = NULL;
 
+void menuhowPlay(GObject *buttonInit, gpointer user_data) {
   /*   Cierre de ventana   */
-  // FIXME: No se cierra la ventana anterior
-  windowClose = gtk_widget_get_window(GTK_WIDGET(buttonInit));
-  gdk_window_destroy (windowClose);
-  g_print("Se cerro ventana principal!");
-
+  GtkWindow *windowClose;
+  windowClose = GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(buttonInit)));
+  if(GTK_IS_WINDOW(windowClose)){
+    g_print("Se cierra: %s", gtk_window_get_title (GTK_WINDOW (windowClose)));
+    gtk_widget_destroy(GTK_WIDGET(windowClose));
+  }
   /*   Integracion del XML   */
+  GtkBuilder *builder;
+  GError *error = NULL;
   builder = gtk_builder_new ();
   if (gtk_builder_add_from_file (builder, "XML/ComoJugar.glade", &error) == 0) {
     g_printerr ("Error loading file: %s\n", error->message);
     g_clear_error (&error);
     system("pause");
   }
-
-  void Objetivo(GObject *buttonInit, GtkBuilder* builder)
-  {
-    
-  }
-
   /*   Obtencion de Objetos   */
   GtkWidget *window;
   GObject *button;
   /*   Ventanas   */
-  window = GTK_WIDGET(gtk_builder_get_object (builder, "SelectMode"));
+  window = GTK_WIDGET(gtk_builder_get_object (builder, "ComoJugarW"));
   g_signal_connect (window, "destroy", G_CALLBACK (gtk_main_quit), NULL);
-  /*   Generales   */
-  gtk_builder_connect_signals(builder, NULL);
   /*   Botones   */
   button = gtk_builder_get_object (builder, "Objetivo");
-  g_signal_connect (button, "clicked", G_CALLBACK (Objetivo), builder);
-  button = gtk_builder_get_object (builder, "Instrucciones");
-  // g_signal_connect (button, "clicked", G_CALLBACK (menuMult), builder);
+  g_signal_connect (button, "clicked", G_CALLBACK (menuObj), builder);
+  button = gtk_builder_get_object (builder, "Instruc");
+  g_signal_connect (button, "clicked", G_CALLBACK (menuInstruc), builder);
 
   gtk_widget_show_all(GTK_WIDGET(window));
+}
+
+void menuObj(GObject *buttonInit, GtkBuilder* builder) {
+  /*   Cierre de ventana   */
+  GtkWindow *windowClose;
+  windowClose = GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(buttonInit)));
+  if(GTK_IS_WINDOW(windowClose)){
+    g_print("Se cierra: %s", gtk_window_get_title (GTK_WINDOW (windowClose)));
+    gtk_widget_destroy(GTK_WIDGET(windowClose));
+  }
+  g_print("Menu Objetivos");
+  g_object_unref(builder);
+  /*   Regresar a ventana principal  */
+  activate(NULL,NULL);
 
 }
-void menuPlay(GObject *buttonInit, gpointer user_data){
-  GtkBuilder *builder;
-  GdkWindow *windowClose;
-  GError *error = NULL;
 
+void menuInstruc(GObject *buttonInit, GtkBuilder* builder){
   /*   Cierre de ventana   */
-  // FIXME: No se cierra la ventana anterior
-  windowClose = gtk_widget_get_window(GTK_WIDGET(buttonInit));
-  gdk_window_destroy (windowClose);
-  g_print("Se cerro ventana principal!");
+  GtkWindow *windowClose;
+  windowClose = GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(buttonInit)));
+  if(GTK_IS_WINDOW(windowClose)){
+    g_print("Se cierra: %s", gtk_window_get_title (GTK_WINDOW (windowClose)));
+    gtk_widget_destroy(GTK_WIDGET(windowClose));
+  }
+  g_print("Menu instrucciones");
+  g_object_unref(builder);
+  /*   Regresar a ventana principal  */
+  activate(NULL,NULL);
+}
 
+void menuPlay(GObject *buttonInit, gpointer user_data){
+  /*   Cierre de ventana   */
+  GtkWindow *windowClose;
+  windowClose = GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(buttonInit)));
+  if(GTK_IS_WINDOW(windowClose)){
+    g_print("Se cierra: %s\n", gtk_window_get_title (GTK_WINDOW (windowClose)));
+    gtk_widget_destroy(GTK_WIDGET(windowClose));
+  }
   /*   Integracion del XML   */
+  GtkBuilder *builder;
+  GError *error = NULL;
   builder = gtk_builder_new ();
   if (gtk_builder_add_from_file (builder, "XML/PreJuego.glade", &error) == 0) {
     g_printerr ("Error loading file: %s\n", error->message);
     g_clear_error (&error);
     system("pause");
   }
-
   /*   Obtencion de Objetos   */
   GtkWidget *window;
   GObject *button;
   /*   Ventanas   */
   window = GTK_WIDGET(gtk_builder_get_object (builder, "SelectMode"));
-  g_signal_connect (window, "destroy", G_CALLBACK (gtk_main_quit), NULL);
-  /*   Generales   */
-  gtk_builder_connect_signals(builder, NULL);
+  // g_signal_connect (window, "destroy", G_CALLBACK (gtk_main_quit), NULL);
   /*   Botones   */
   button = gtk_builder_get_object (builder, "GameLocal");
   g_signal_connect (button, "clicked", G_CALLBACK (menuLocal), builder);
@@ -246,32 +255,38 @@ void menuLocal(GObject *buttonInit, GtkBuilder* builder){
   // TODO: Definir en la estructura el modo de juego
   // TODO: Guardar vaiables del numero de jugadores  y contra quien va a jugar
   int vs; // 0 = vs CPU, 1 = vs Player
-  GtkWidget *windowClose;
-  // FIXME: No se cierra la ventana anterior
     /*   Cierre de ventana   */
-  windowClose = GTK_WIDGET(gtk_widget_get_window(GTK_WIDGET(buttonInit)));
-  gtk_widget_destroy(windowClose);
-
+  GtkWindow *windowClose;
+  windowClose = GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(buttonInit)));
+  if(GTK_IS_WINDOW(windowClose)){
+    g_print("Se cierra: %s\n", gtk_window_get_title (GTK_WINDOW (windowClose)));
+    gtk_widget_destroy(GTK_WIDGET(windowClose));
+  }
   /*   Obtencion de Objetos   */
-  GObject *buttonBot, *buttonHuman, *img;
+  GObject *buttonBot, *buttonHuman, *Eventimg;
   GtkWidget *window;
 
   window = GTK_WIDGET(gtk_builder_get_object (builder, "SelectPlayer"));
-  g_signal_connect (window, "destroy", G_CALLBACK (gtk_main_quit), NULL);
+  // g_signal_connect (window, "destroy", G_CALLBACK (gtk_main_quit), NULL);
 
-  img = gtk_builder_get_object (builder, "1");
-  g_signal_connect (GTK_WIDGET(img), "clicked", G_CALLBACK(playerSelectFn), builder);
-  img = gtk_builder_get_object (builder, "2");
-  g_signal_connect (GTK_WIDGET(img), "clicked", G_CALLBACK(playerSelectFn), builder);
-  img = gtk_builder_get_object (builder, "3");
-  g_signal_connect (GTK_WIDGET(img), "clicked",  G_CALLBACK(playerSelectFn), builder);
-  img = gtk_builder_get_object (builder, "4");
-  g_signal_connect (GTK_WIDGET(img), "clicked", G_CALLBACK(playerSelectFn), builder);
+  // TODO: Pasar los eventos a una caja de eventos
+  Eventimg = gtk_builder_get_object (builder, "1P");
+  g_signal_connect (GTK_WIDGET(Eventimg), "button-release-event", G_CALLBACK(playerSelectFn), builder);
+  gtk_widget_set_name(GTK_WIDGET(Eventimg), "1P");
+  Eventimg = gtk_builder_get_object (builder, "2P");
+  g_signal_connect (GTK_WIDGET(Eventimg), "button-release-event", G_CALLBACK(playerSelectFn), builder);
+  gtk_widget_set_name(GTK_WIDGET(Eventimg), "2P");
+  Eventimg = gtk_builder_get_object (builder, "3P");
+  g_signal_connect (GTK_WIDGET(Eventimg), "button-release-event",  G_CALLBACK(playerSelectFn), builder);
+  gtk_widget_set_name(GTK_WIDGET(Eventimg), "3P");
+  Eventimg = gtk_builder_get_object (builder, "4P");
+  g_signal_connect (GTK_WIDGET(Eventimg), "button-release-event", G_CALLBACK(playerSelectFn), builder);
+  gtk_widget_set_name(GTK_WIDGET(Eventimg), "4P");
 
   buttonBot = gtk_builder_get_object (builder, "Bot");
-  g_signal_connect (buttonBot, "clicked", G_CALLBACK(SelectVSFn), builder);
+  g_signal_connect (buttonBot, "button-release-event", G_CALLBACK(SelectVSFn), builder);
   buttonHuman = gtk_builder_get_object (builder, "Human");
-  g_signal_connect (buttonHuman, "clicked", G_CALLBACK(SelectVSFn), builder);
+  g_signal_connect (buttonHuman, "button-release-event", G_CALLBACK(SelectVSFn), builder);
 
   gtk_widget_show_all(GTK_WIDGET(window));
   gtk_widget_hide(GTK_WIDGET(buttonBot));
@@ -280,12 +295,16 @@ void menuLocal(GObject *buttonInit, GtkBuilder* builder){
 
 void profiles(GObject *buttonInit, GtkBuilder* builder){
       /*   Cierre de ventana   */
-  // FIXME: No se cierra la ventana anterior
-  gtk_widget_destroy(GTK_WIDGET(gtk_widget_get_window(GTK_WIDGET(buttonInit))));
+  GtkWindow *windowClose;
+  windowClose = GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(buttonInit)));
+  if(GTK_IS_WINDOW(windowClose)){
+    g_print("Se cierra: %s\n", gtk_window_get_title (GTK_WINDOW (windowClose)));
+    gtk_widget_destroy(GTK_WIDGET(windowClose));
+  }
 
   GtkWidget *window;
   window = GTK_WIDGET(gtk_builder_get_object (builder, "ProfileBuild"));
-  g_signal_connect (window, "destroy", G_CALLBACK (gtk_main_quit), NULL);
+  // g_signal_connect (window, "destroy", G_CALLBACK (gtk_main_quit), NULL);
 
   /*  Repeticion de ventana   */
   /* Necesito la estructura de datos globales para poder hacer el ciclo de la funcion */
@@ -296,16 +315,17 @@ void playerSelectFn(GObject *playerImg, GtkBuilder* builder){
   GObject *button;
   const gchar* data;
   data = gtk_widget_get_name(GTK_WIDGET(playerImg));
-  g_print("Player Select = %s!", data);
+  g_print("Player Select = %s!\n", data);
   // Meter dato a la estructura de datos globales
   /*   AQUI   */
   if (strcmp(data, "1") == 0){
     button = gtk_builder_get_object (builder, "Human");
     gtk_widget_show(GTK_WIDGET(button));
+  } else {
+    button = gtk_builder_get_object (builder, "Bot");
+    gtk_widget_show(GTK_WIDGET(button));
   }
-
-  button = gtk_builder_get_object (builder, "Bot");
-  gtk_widget_show(GTK_WIDGET(button));
+  g_object_unref(builder);
 }
 
 void SelectVSFn(GObject *vsImg, GtkBuilder* builder){
@@ -313,8 +333,9 @@ void SelectVSFn(GObject *vsImg, GtkBuilder* builder){
   const gchar* data;
 
   data = gtk_widget_get_name(GTK_WIDGET(vsImg));
-  g_print("VS Select = %s!", data);
+  g_print("VS Select = %s!\n", data);
     // Meter dato a la estructura de datos globales
     /*   AQUI   */
   playerSelectFn(vsImg,builder);
+  g_object_unref(builder);
 }
