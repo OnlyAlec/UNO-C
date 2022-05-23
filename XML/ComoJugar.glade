@@ -266,10 +266,10 @@
                 <property name="can-focus">False</property>
                 <property name="spacing">5</property>
                 <child>
-                  <object class="GtkImage" id="local">
+                  <object class="GtkImage" id="objetivo">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="pixbuf">..\assets\icons\singlePlayer.png</property>
+                    <property name="pixbuf">..\assets\icons\objective.png</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -281,7 +281,7 @@
                   <object class="GtkLabel">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="label" translatable="yes">Modo Local</property>
+                    <property name="label" translatable="yes">Objetivo     </property>
                     <property name="single-line-mode">True</property>
                     <attributes>
                       <attribute name="weight" value="bold"/>
@@ -315,10 +315,10 @@
                 <property name="can-focus">False</property>
                 <property name="spacing">5</property>
                 <child>
-                  <object class="GtkImage" id="multiplayer">
+                  <object class="GtkImage" id="instrucciones">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="pixbuf">..\assets\icons\multiplayer.png</property>
+                    <property name="pixbuf">..\assets\icons\instrucciones.png</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -330,7 +330,7 @@
                   <object class="GtkLabel">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="label" translatable="yes">Modo Multijugador</property>
+                    <property name="label" translatable="yes">Instrucciones</property>
                     <attributes>
                       <attribute name="weight" value="bold"/>
                       <attribute name="scale" value="2"/>
