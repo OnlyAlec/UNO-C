@@ -175,7 +175,7 @@
                 <property name="height-request">182</property>
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="pixbuf">..\assets\small\card_back_alt.png</property>
+                <property name="pixbuf">..\assets\MainCards\small\card_back_alt.png</property>
               </object>
             </child>
           </object>
@@ -190,14 +190,14 @@
             <property name="height-request">80</property>
             <property name="visible">True</property>
             <property name="can-focus">False</property>
-            <signal name="button-release-event" handler="g_application_quit" swapped="no"/>
+            <signal name="button-release-event" handler="gtk_main_quit" swapped="no"/>
             <child>
               <object class="GtkImage" id="Right1">
                 <property name="width-request">130</property>
                 <property name="height-request">182</property>
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="pixbuf">..\assets\small\card_back_alt.png</property>
+                <property name="pixbuf">..\assets\MainCards\small\card_back_alt.png</property>
               </object>
             </child>
           </object>
@@ -218,7 +218,7 @@
                 <property name="height-request">182</property>
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="pixbuf">..\assets\small\card_back_alt.png</property>
+                <property name="pixbuf">..\assets\MainCards\small\card_back_alt.png</property>
               </object>
             </child>
           </object>

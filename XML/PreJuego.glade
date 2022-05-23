@@ -431,12 +431,18 @@
             <property name="can-focus">False</property>
             <property name="spacing">15</property>
             <child>
-              <object class="GtkImage" id="1">
-                <property name="width-request">222</property>
-                <property name="height-request">310</property>
+              <object class="GtkEventBox" id="1P">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="pixbuf">..\assets\SelectCards\SelectCard_1.png</property>
+                <child>
+                  <object class="GtkImage">
+                    <property name="width-request">222</property>
+                    <property name="height-request">310</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="pixbuf">..\assets\SelectCards\SelectCard_1.png</property>
+                  </object>
+                </child>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -445,12 +451,18 @@
               </packing>
             </child>
             <child>
-              <object class="GtkImage" id="2">
-                <property name="width-request">222</property>
-                <property name="height-request">310</property>
+              <object class="GtkEventBox" id="2P">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="pixbuf">..\assets\SelectCards\SelectCard_2.png</property>
+                <child>
+                  <object class="GtkImage">
+                    <property name="width-request">222</property>
+                    <property name="height-request">310</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="pixbuf">..\assets\SelectCards\SelectCard_2.png</property>
+                  </object>
+                </child>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -459,12 +471,18 @@
               </packing>
             </child>
             <child>
-              <object class="GtkImage" id="3">
-                <property name="width-request">222</property>
-                <property name="height-request">310</property>
+              <object class="GtkEventBox" id="3P">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="pixbuf">..\assets\SelectCards\SelectCard_3.png</property>
+                <child>
+                  <object class="GtkImage">
+                    <property name="width-request">222</property>
+                    <property name="height-request">310</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="pixbuf">..\assets\SelectCards\SelectCard_3.png</property>
+                  </object>
+                </child>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -473,12 +491,18 @@
               </packing>
             </child>
             <child>
-              <object class="GtkImage" id="4">
-                <property name="width-request">221</property>
-                <property name="height-request">309</property>
+              <object class="GtkEventBox" id="4P">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="pixbuf">..\assets\SelectCards\SelectCard_4.png</property>
+                <child>
+                  <object class="GtkImage">
+                    <property name="width-request">221</property>
+                    <property name="height-request">309</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="pixbuf">..\assets\SelectCards\SelectCard_4.png</property>
+                  </object>
+                </child>
               </object>
               <packing>
                 <property name="expand">False</property>

@@ -14,6 +14,8 @@
 #include <gtk/gtk.h>
 #include <gst/gst.h>
 
+void SEXOO();
+
 char* fullPath( char * partialPath )
 {
   int i=0;
@@ -37,18 +39,29 @@ char* fullPath( char * partialPath )
 /*   Globales   */
 GstElement *sink, *play;
 
+
+
+
 static void activate(GtkApplication *app, gpointer user_data) {
   GtkWidget *window = gtk_application_window_new(app);
-  gtk_window_set_default_size(GTK_WINDOW(window), 800, 600);
+  gtk_window_set_default_size(GTK_WINDOW(window), 1280, 720);
   GtkWidget *root_pane = gtk_layout_new(NULL, NULL);
   gtk_container_add(GTK_CONTAINER(window), root_pane);
-
   GtkWidget *video_drawing_area = gtk_drawing_area_new();
 
-  g_object_get (sink, "widget", &video_drawing_area, NULL);
-  gtk_widget_set_size_request(video_drawing_area, 800, 600);
-  gtk_container_add(GTK_CONTAINER(root_pane), video_drawing_area);
+    GtkWidget *Logo = gtk_image_new_from_file ("RetroUno_W.png");
 
+
+    gtk_overlay_add_overlay(GTK_CONTAINER(root_pane), Logo);
+    gtk_widget_set_halign(Logo, GTK_ALIGN_CENTER);
+    gtk_widget_set_valign(Logo, GTK_ALIGN_START);
+    ///g_signal_connect(G_OBJECT(Logo), "clicked", G_CALLBACK(SEXOO), NULL);
+  
+  
+  g_object_get (sink, "widget", &video_drawing_area, NULL);
+  gtk_widget_set_size_request(video_drawing_area, 1280, 720);
+  gtk_container_add(GTK_CONTAINER(root_pane), video_drawing_area);
+  
   gst_element_set_state (play, GST_STATE_PLAYING);
   gtk_widget_show_all(window);
 }
@@ -72,12 +85,16 @@ gboolean bus_callback(GstBus *bus, GstMessage *msg, gpointer data) {
   return TRUE;
 }
 
+
+
+
+
 int main(int argc, char **argv) {
   GMainLoop *loop;
   GstBus *bus;
 
   char file[_MAX_PATH] = "file:///";
-  strcat(file, fullPath("..\\..\\assets\\backgrounds\\blue.mp4"));
+  strcat(file, fullPath("..\\..\\assets\\backgrounds\\Blue.mp4"));
 
   /* init GStreamer */
   gtk_init (&argc, &argv);
@@ -106,4 +123,10 @@ int main(int argc, char **argv) {
   gst_object_unref (GST_OBJECT (play));
   system("pause");
   return 0;
+}
+
+
+
+void SEXOO(){
+  g_print("\nDISCULPE DULCE DAMISELA, SERIA TAN AMABLE DE USAR MI ROSTRO COMO OBJETO DE REPOSO PARA SU ABUNDANTE RETAGUARIDA :)\n");
 }
