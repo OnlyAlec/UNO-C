@@ -87,7 +87,7 @@ int main (int argc, char *argv[]) {
   GstBus *bus;
 
   char file[_MAX_PATH] = "file:///";
-  strcat(file, fullPath("..\\..\\assets\\backgrounds\\Blue.mp4"));
+  strcat(file, fullPath("assets\\backgrounds\\Blue.mp4"));
 
   /*   init GTK && GTS   */
   gtk_init (&argc, &argv);
