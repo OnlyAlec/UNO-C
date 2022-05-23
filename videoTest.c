@@ -6,6 +6,10 @@
 static GstElement *playbin, *play, *sink;
 
 void TESTING();
+void motionCardMovement(); 
+void menuhowPlay();
+
+
 
 char* fullPath( char * partialPath )
 {
@@ -46,41 +50,57 @@ gboolean bus_callback(GstBus *bus, GstMessage *msg, gpointer data) {
   return TRUE;
 }
 
-static void SEXOO(GtkButton *button, gpointer user_data){
-    g_print("HOLA SEXO?");
-}
-
 
 static void activate(GtkApplication *app, gpointer user_data) {
-
+    GtkBuilder *builder = gtk_builder_new();
+    GError *error = NULL;
     GtkWidget *window = gtk_application_window_new(app);
     GtkWidget *root_pane = gtk_overlay_new();
     GtkWidget *video_drawing_area = gtk_drawing_area_new();
     GtkWidget *opt1 = gtk_image_new_from_file("assets\\SelectCards\\SelectCard_1.png");
+    GtkWidget *opt2 = gtk_image_new_from_file("assets\\SelectCards\\SelectCard_2.png");
+    GtkWidget *opt3 = gtk_image_new_from_file("assets\\SelectCards\\SelectCard_3.png");
     GtkWidget *Logo = gtk_image_new_from_file ("assets\\logos\\RetroUno_W.png");
+    GtkWidget *US = gtk_button_new_with_label("Acerca de Nosotros");
+    GObject *event;
+
+      builder = gtk_builder_new ();
+      if (gtk_builder_add_from_file (builder, "XML/PrincipalPlus.glade", &error) == 0) {
+        g_printerr ("Error loading file: %s\n", error->message);
+        g_clear_error (&error);
+        system("pause");
+      }
+      
     gtk_container_add(GTK_CONTAINER(window), root_pane);
-  
+
     g_object_get (sink, "widget", &video_drawing_area, NULL);
     gtk_widget_set_size_request(video_drawing_area, 1280, 720);
     gtk_container_add(GTK_CONTAINER(root_pane), video_drawing_area);
-    ///g_signal_connect(video_drawing_area, "realize", G_CALLBACK(realize_video_drawing_area), NULL);
-
 
     gtk_overlay_add_overlay(GTK_OVERLAY(root_pane), opt1);
+    gtk_overlay_add_overlay(GTK_OVERLAY(root_pane), opt2);
+    gtk_overlay_add_overlay(GTK_OVERLAY(root_pane), opt3);
     gtk_overlay_add_overlay(GTK_OVERLAY(root_pane), Logo);
-    
+    gtk_overlay_add_overlay(GTK_OVERLAY(root_pane), US);
+
     gtk_widget_set_halign(opt1, GTK_ALIGN_START);
-    gtk_widget_set_valign(opt1, 50);
+    gtk_widget_set_valign(opt1, GTK_ALIGN_CENTER);
+
+    gtk_widget_set_halign(opt2, GTK_ALIGN_CENTER);
+    gtk_widget_set_valign(opt3, GTK_ALIGN_CENTER);
+    
+    gtk_widget_set_halign(opt3, GTK_ALIGN_END);
+    gtk_widget_set_valign(opt3, GTK_ALIGN_CENTER);
 
     gtk_widget_set_halign(Logo, GTK_ALIGN_CENTER);
-    gtk_widget_set_valign(Logo, GTK_ALIGN_BASELINE);
+    gtk_widget_set_valign(Logo, GTK_ALIGN_START);
     
-    gtk_widget_set_margin_end(opt1, 50);
-    gtk_widget_set_margin_bottom(opt1, 200);
+    gtk_widget_set_halign(US, GTK_ALIGN_END);
+    gtk_widget_set_valign(US, GTK_ALIGN_START);
 
-
-    gtk_widget_set_margin_end(Logo, 0);
-    gtk_widget_set_margin_bottom(Logo, 600);  
+    g_signal_connect(G_OBJECT(US), "clicked", G_CALLBACK(TESTING), NULL);
+    g_signal_connect (G_OBJECT(opt1), "motion-notify-event", G_CALLBACK (TESTING), NULL);
+    g_signal_connect (G_OBJECT(opt1), "button-release-event", G_CALLBACK (menuhowPlay), NULL);
 
     gst_element_set_state (play, GST_STATE_PLAYING);
     gtk_widget_show_all(window);
@@ -124,4 +144,34 @@ int main(int argc, char **argv) {
 void TESTING(){
   g_print("\nDISCULPE DULCE DAMISELA, SERIA TAN AMABLE DE USAR MI ROSTRO COMO OBJETO DE REPOSO PARA SU ABUNDANTE RETAGUARIDA :)\n");
   // xD?
+}
+
+void motionCardMovement(){
+  g_print("Motion on Card Triggered!");
+}
+
+
+void menuhowPlay(GObject *buttonInit, gpointer user_data) {
+  /*   Cierre de ventana   */
+  GtkWindow *windowClose;
+  windowClose = GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(buttonInit)));
+  if(GTK_IS_WINDOW(windowClose)){
+    g_print("Se cierra: %s", gtk_window_get_title (GTK_WINDOW (windowClose)));
+    gtk_widget_destroy(GTK_WIDGET(windowClose));
+  }
+  /*   Integracion del XML   */
+  GtkBuilder *builder;
+  GError *error = NULL;
+  builder = gtk_builder_new ();
+  if (gtk_builder_add_from_file (builder, "XML/ComoJugar.glade", &error) == 0) {
+    g_printerr ("Error loading file: %s\n", error->message);
+    g_clear_error (&error);
+    system("pause");
+  }
+
+  GtkWidget *window;
+
+    window = GTK_WIDGET(gtk_builder_get_object (builder, "ComoJugarW"));
+  g_signal_connect (window, "destroy", G_CALLBACK (gtk_main_quit), NULL);
+  gtk_widget_show_all(GTK_WIDGET(window));
 }
