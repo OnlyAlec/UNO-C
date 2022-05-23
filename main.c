@@ -24,6 +24,7 @@ void playerSelectFn(GObject *, GtkBuilder* );
 void SelectVSFn(GObject *, GtkBuilder* );
 char* fullPath(char *);
 gboolean bus_callback(GstBus *, GstMessage *, gpointer);
+void returnMain(GObject*, gpointer*);
 
 // Menus
 void menuPlay(GObject *, gpointer);
@@ -107,7 +108,6 @@ int main (int argc, char *argv[]) {
   /*  GTK Set Up   */
   // FIXME: Intentar no correr el programa como una aplicaccion, correrlo con un main()
   // FIXME: No iniciar el loop de la aplicacion (mas bien ocupar el del programa) y no iniciar el loop del GTS si lo incertas en un overley/layer/etc
-  // TODO: Quitar las cajas de eventos de la ventana principal, activar el motion en las imagenes
   activate(NULL,NULL);
 
   gst_element_set_state (play, GST_STATE_PLAYING);
@@ -115,6 +115,7 @@ int main (int argc, char *argv[]) {
   /*   Limpieza   */
   gst_element_set_state (play, GST_STATE_NULL);
   gst_object_unref (GST_OBJECT (play));
+  system("pause");
   return 0;
 }
 
@@ -163,7 +164,7 @@ void menuhowPlay(GObject *buttonInit, gpointer user_data) {
   GtkWindow *windowClose;
   windowClose = GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(buttonInit)));
   if(GTK_IS_WINDOW(windowClose)){
-    g_print("Se cierra: %s", gtk_window_get_title (GTK_WINDOW (windowClose)));
+    g_print("Se cierra: %s\n", gtk_window_get_title (GTK_WINDOW (windowClose)));
     gtk_widget_destroy(GTK_WIDGET(windowClose));
   }
   /*   Integracion del XML   */
@@ -180,7 +181,7 @@ void menuhowPlay(GObject *buttonInit, gpointer user_data) {
   GObject *button;
   /*   Ventanas   */
   window = GTK_WIDGET(gtk_builder_get_object (builder, "ComoJugarW"));
-  g_signal_connect (window, "destroy", G_CALLBACK (gtk_main_quit), NULL);
+  // g_signal_connect (window, "destroy", G_CALLBACK (gtk_main_quit), NULL);
   /*   Botones   */
   button = gtk_builder_get_object (builder, "Objetivo");
   g_signal_connect (button, "clicked", G_CALLBACK (menuObj), builder);
@@ -191,32 +192,42 @@ void menuhowPlay(GObject *buttonInit, gpointer user_data) {
 }
 
 void menuObj(GObject *buttonInit, GtkBuilder* builder) {
+  GObject *window, *button;
+
   /*   Cierre de ventana   */
   GtkWindow *windowClose;
   windowClose = GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(buttonInit)));
   if(GTK_IS_WINDOW(windowClose)){
-    g_print("Se cierra: %s", gtk_window_get_title (GTK_WINDOW (windowClose)));
+    g_print("Se cierra: %s\n", gtk_window_get_title (GTK_WINDOW (windowClose)));
     gtk_widget_destroy(GTK_WIDGET(windowClose));
   }
-  g_print("Menu Objetivos");
-  g_object_unref(builder);
-  /*   Regresar a ventana principal  */
-  activate(NULL,NULL);
+  /*   Nuevo menu   */
+  g_print("Menu Objetivos\n");
+  window = gtk_builder_get_object (builder, "menuObjetivo");
+  button = gtk_builder_get_object (builder, "back-btn");
+  g_signal_connect (button, "clicked", G_CALLBACK (returnMain), NULL);
 
+  gtk_widget_show_all(GTK_WIDGET(window));
+  // g_object_unref(builder);
 }
 
 void menuInstruc(GObject *buttonInit, GtkBuilder* builder){
   /*   Cierre de ventana   */
   GtkWindow *windowClose;
+  GObject *window, *button;
   windowClose = GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(buttonInit)));
   if(GTK_IS_WINDOW(windowClose)){
-    g_print("Se cierra: %s", gtk_window_get_title (GTK_WINDOW (windowClose)));
+    g_print("Se cierra: %s\n", gtk_window_get_title (GTK_WINDOW (windowClose)));
     gtk_widget_destroy(GTK_WIDGET(windowClose));
   }
-  g_print("Menu instrucciones");
-  g_object_unref(builder);
-  /*   Regresar a ventana principal  */
-  activate(NULL,NULL);
+  /*   Nuevo menu   */
+  g_print("Menu instrucciones\n");
+  window = gtk_builder_get_object (builder, "menuInstrucciones");
+  button = gtk_builder_get_object (builder, "back-btn2");
+  g_signal_connect (button, "clicked", G_CALLBACK (returnMain), NULL);
+
+  gtk_widget_show_all(GTK_WIDGET(window));
+  // g_object_unref(builder);
 }
 
 void menuPlay(GObject *buttonInit, gpointer user_data){
@@ -338,4 +349,14 @@ void SelectVSFn(GObject *vsImg, GtkBuilder* builder){
     /*   AQUI   */
   playerSelectFn(vsImg,builder);
   g_object_unref(builder);
+}
+
+void returnMain(GObject *init, gpointer* user_data){
+  GtkWindow *windowClose;
+  windowClose = GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(init)));
+  if(GTK_IS_WINDOW(windowClose)){
+    g_print("Se cierra: %s\n", gtk_window_get_title (GTK_WINDOW (windowClose)));
+    gtk_widget_destroy(GTK_WIDGET(windowClose));
+  }
+  main(0,NULL);
 }
