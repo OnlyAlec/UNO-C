@@ -7,29 +7,25 @@
     <property name="default-width">1280</property>
     <property name="default-height">720</property>
     <child>
-      <object class="GtkLayout">
+      <object class="GtkOverlay" id="Overlay">
+        <property name="name">Overlays</property>
         <property name="width-request">1280</property>
         <property name="height-request">720</property>
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="width">1280</property>
-        <property name="height">720</property>
         <child>
-          <object class="GtkImage" id="BG-Img">
-            <property name="width-request">1280</property>
-            <property name="height-request">664</property>
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
-            <property name="pixbuf">..\assets\backgrounds\Selecciones.png</property>
-          </object>
+          <placeholder/>
         </child>
-        <child>
-          <object class="GtkButton" id="Objetivo">
+        <child type="overlay">
+          <object class="GtkButton" id="Objetivo2">
             <property name="width-request">239</property>
             <property name="height-request">90</property>
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="receives-default">True</property>
+            <property name="halign">center</property>
+            <property name="valign">center</property>
+            <property name="margin-top">200</property>
             <property name="always-show-image">True</property>
             <child>
               <object class="GtkBox">
@@ -37,7 +33,7 @@
                 <property name="can-focus">False</property>
                 <property name="spacing">5</property>
                 <child>
-                  <object class="GtkImage" id="objetivo">
+                  <object class="GtkImage" id="objetivo2">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
                     <property name="pixbuf">..\assets\icons\objective.png</property>
@@ -68,18 +64,17 @@
               </object>
             </child>
           </object>
-          <packing>
-            <property name="x">520</property>
-            <property name="y">210</property>
-          </packing>
         </child>
-        <child>
-          <object class="GtkButton" id="Instruc">
-            <property name="width-request">252</property>
+        <child type="overlay">
+          <object class="GtkButton" id="InstruccionesBtn">
+            <property name="width-request">239</property>
             <property name="height-request">90</property>
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="receives-default">True</property>
+            <property name="halign">center</property>
+            <property name="valign">center</property>
+            <property name="margin-bottom">200</property>
             <property name="always-show-image">True</property>
             <child>
               <object class="GtkBox">
@@ -87,7 +82,7 @@
                 <property name="can-focus">False</property>
                 <property name="spacing">5</property>
                 <child>
-                  <object class="GtkImage" id="instrucciones">
+                  <object class="GtkImage" id="objetivo3">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
                     <property name="pixbuf">..\assets\icons\instrucciones.png</property>
@@ -102,7 +97,11 @@
                   <object class="GtkLabel">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
                     <property name="label" translatable="yes">Instrucciones</property>
+                    <property name="justify">right</property>
+                    <property name="track-visited-links">False</property>
                     <attributes>
                       <attribute name="weight" value="bold"/>
                       <attribute name="scale" value="2"/>
@@ -118,8 +117,7 @@
             </child>
           </object>
           <packing>
-            <property name="x">511</property>
-            <property name="y">450</property>
+            <property name="index">1</property>
           </packing>
         </child>
       </object>

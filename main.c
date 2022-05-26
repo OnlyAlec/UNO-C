@@ -35,6 +35,24 @@ void menuInstruc(GObject*, GtkBuilder* );
 void menuObj(GObject*, GtkBuilder* );
 void menuLocal(GObject *, GtkBuilder* );
 
+static void activate_Video(char * path ){
+  GstBus *bus;
+
+  char file[_MAX_PATH] = "file:///";
+  strcat(file, fullPath(path));
+
+  play = gst_element_factory_make ("playbin", NULL);
+  g_object_set (G_OBJECT (play), "uri", file, NULL);
+
+  sink = gst_element_factory_make ("gtksink", NULL);
+  g_object_set(play, "video-sink", sink, NULL);
+
+  /*   GST Set Up   */
+  bus = gst_pipeline_get_bus (GST_PIPELINE (play));
+  gst_bus_add_watch (bus, bus_callback, play);
+  gst_object_unref (bus);
+}
+
 static void activate(GtkApplication *app, gpointer user_data) {
   GtkBuilder *builder;
   GObject *button, *box, *event, *overlayArea, *img;
@@ -52,12 +70,8 @@ static void activate(GtkApplication *app, gpointer user_data) {
   /*   Conexion de señales    */
     /* Ventana Principal */
   windowMain = gtk_builder_get_object (builder, "main");
-  //g_signal_connect (windowMain, "motion-notify-event", G_CALLBACK (motionCardMovement), NULL);
-  //gtk_widget_add_events(GTK_WIDGET(windowMain), GDK_POINTER_MOTION_MASK);
-
-
   // g_signal_connect (windowMain, "destroy", G_CALLBACK (gtk_main_quit), NULL);
-  //     /* Generales */
+    /* Generales */
   gtk_builder_connect_signals(builder, NULL);
     /*   Video Area   */
     overlayArea = gtk_builder_get_object (builder, "Overlay");
@@ -90,43 +104,24 @@ static void activate(GtkApplication *app, gpointer user_data) {
   g_signal_connect (event, "enter_notify_event", G_CALLBACK (motionCardMovement), NULL);
   g_signal_connect (event, "leave_notify_event", G_CALLBACK (motionCardMovement), NULL);
 
-
   gst_element_set_state (play, GST_STATE_PLAYING);
   gtk_widget_show_all(GTK_WIDGET(windowMain));
   g_object_unref (builder);
 }
 
 int main (int argc, char *argv[]) {
-  GstBus *bus;
-
-  char file[_MAX_PATH] = "file:///";
-  strcat(file, fullPath("assets\\backgrounds\\Blue.mp4"));
-
   /*   init GTK && GTS   */
   gtk_init (&argc, &argv);
   gst_init (&argc, &argv);
   // loop = g_main_loop_new (NULL, FALSE);
-
-  play = gst_element_factory_make ("playbin", NULL);
-  g_object_set (G_OBJECT (play), "uri", file, NULL);
-
-  sink = gst_element_factory_make ("gtksink", NULL);
-  g_object_set(play, "video-sink", sink, NULL);
-
-  /*   GST Set Up   */
-  bus = gst_pipeline_get_bus (GST_PIPELINE (play));
-  gst_bus_add_watch (bus, bus_callback, play);
-  gst_object_unref (bus);
-
-  /*  GTK Set Up   */
-  // FIXME: Intentar no correr el programa como una aplicaccion, correrlo con un main()
-  // FIXME: No iniciar el loop de la aplicacion (mas bien ocupar el del programa) y no iniciar el loop del GTS si lo incertas en un overley/layer/etc
+  /* Activacion de la aplicacion */
+  activate_Video("assets\\backgrounds\\Blue.mp4");
   activate(NULL,NULL);
+  /*  GTK Set Up   */
   gtk_main();
   /*   Limpieza   */
   gst_element_set_state (play, GST_STATE_NULL);
   gst_object_unref (GST_OBJECT (play));
-  system("pause");
   return 0;
 }
 
@@ -200,18 +195,28 @@ void menuhowPlay(GObject *buttonInit, gpointer user_data) {
     g_clear_error (&error);
     system("pause");
   }
+  /*   Activacion Video   */
+  activate_Video("assets\\backgrounds\\VideoInstrucciones.mp4");
   /*   Obtencion de Objetos   */
   GtkWidget *window;
-  GObject *button;
+  GObject *button, *overlayArea;
+  GtkWidget *video_drawing_area = gtk_drawing_area_new();
+
   /*   Ventanas   */
   window = GTK_WIDGET(gtk_builder_get_object (builder, "ComoJugarW"));
   // g_signal_connect (window, "destroy", G_CALLBACK (gtk_main_quit), NULL);
+    /*   Video Area   */
+  overlayArea = gtk_builder_get_object (builder, "Overlay");
+  g_object_get (sink, "widget", &video_drawing_area, NULL);
+  gtk_widget_set_size_request(video_drawing_area, 1280, 720);
+  gtk_container_add(GTK_CONTAINER(overlayArea), video_drawing_area);
   /*   Botones   */
   button = gtk_builder_get_object (builder, "Objetivo");
   g_signal_connect (button, "clicked", G_CALLBACK (menuObj), builder);
   button = gtk_builder_get_object (builder, "Instruc");
   g_signal_connect (button, "clicked", G_CALLBACK (menuInstruc), builder);
 
+  gst_element_set_state (play, GST_STATE_PLAYING);
   gtk_widget_show_all(GTK_WIDGET(window));
 }
 
