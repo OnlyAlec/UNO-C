@@ -12,13 +12,15 @@
 #include <stdlib.h>
 #include <gtk/gtk.h>
 #include <gst/gst.h>
+#include <gst/video/videooverlay.h>
+#include <gdk/gdkwin32.h>
 
 /*   Globales   */
 GObject *windowMain;
-GstElement *sink;
+static GstElement *playbin, *play, *sink;
 
 /*   Funciones   */
-void motionCardMovement();
+void motionCardMovement(GObject *, int);
 void profiles(GObject *, GtkBuilder* );
 void playerSelectFn(GObject *, GtkBuilder* );
 void SelectVSFn(GObject *, GtkBuilder* );
@@ -35,9 +37,10 @@ void menuLocal(GObject *, GtkBuilder* );
 
 static void activate(GtkApplication *app, gpointer user_data) {
   GtkBuilder *builder;
-  GObject *button, *box, *event, *fixed;
-  GtkWidget *draw;
+  GObject *button, *box, *event, *overlayArea, *img;
   GError *error = NULL;
+  GtkWidget *video_drawing_area = gtk_drawing_area_new();
+
 
   /*   Integracion de XML    */
   builder = gtk_builder_new ();
@@ -49,16 +52,20 @@ static void activate(GtkApplication *app, gpointer user_data) {
   /*   Conexion de señales    */
     /* Ventana Principal */
   windowMain = gtk_builder_get_object (builder, "main");
+  //g_signal_connect (windowMain, "motion-notify-event", G_CALLBACK (motionCardMovement), NULL);
+  gtk_widget_add_events(GTK_WIDGET(windowMain), GDK_POINTER_MOTION_MASK);
+
+
   // g_signal_connect (windowMain, "destroy", G_CALLBACK (gtk_main_quit), NULL);
   //     /* Generales */
   gtk_builder_connect_signals(builder, NULL);
-    /*   Individuales Cajas   */
-  // draw = GTK_WIDGET(gtk_builder_get_object (builder, "bg-video"));
-  // g_object_get (sink, "widget", &draw, NULL);
+    /*   Video Area   */
+    overlayArea = gtk_builder_get_object (builder, "Overlay");
+    g_object_get (sink, "widget", &video_drawing_area, NULL);
+    gtk_widget_set_size_request(video_drawing_area, 1280, 720);
+    gtk_container_add(GTK_CONTAINER(overlayArea), video_drawing_area);
 
   box = gtk_builder_get_object (builder, "Profile");
-  fixed = gtk_builder_get_object (builder, "mainFixed");
-
     /* Individuakes Botones */
   button = gtk_builder_get_object (builder, "Menu-Btn1");
   button = gtk_builder_get_object (builder, "Acerca");
@@ -67,23 +74,26 @@ static void activate(GtkApplication *app, gpointer user_data) {
 
     /* Individuakes Imagenes */
   event = gtk_builder_get_object (builder, "CentralMotion");
-  g_signal_connect (event, "motion-notify-event", G_CALLBACK (motionCardMovement), NULL);
   g_signal_connect (event, "button-release-event", G_CALLBACK (menuPlay), NULL);
-
-  event = gtk_builder_get_object (builder, "RightMotion");
-  g_signal_connect (event, "motion-notify-event", G_CALLBACK (motionCardMovement), NULL);
+  g_signal_connect (event, "enter_notify_event", G_CALLBACK (motionCardMovement), 1);
+  g_signal_connect (event, "leave_notify_event", G_CALLBACK (motionCardMovement), 0);
 
   event = gtk_builder_get_object (builder, "LeftMotion");
-  g_signal_connect (event, "motion-notify-event", G_CALLBACK (motionCardMovement), NULL);
   g_signal_connect (event, "button-release-event", G_CALLBACK (menuhowPlay), NULL);
+  g_signal_connect (event, "enter_notify_event", G_CALLBACK (motionCardMovement), 1);
+  g_signal_connect (event, "leave_notify_event", G_CALLBACK (motionCardMovement), 0);
 
+  event = gtk_builder_get_object (builder, "RightMotion");
+  g_signal_connect (event, "enter_notify_event", G_CALLBACK (motionCardMovement), 1);
+  g_signal_connect (event, "leave_notify_event", G_CALLBACK (motionCardMovement), 0);
+
+
+  gst_element_set_state (play, GST_STATE_PLAYING);
   gtk_widget_show_all(GTK_WIDGET(windowMain));
   g_object_unref (builder);
 }
 
 int main (int argc, char *argv[]) {
-  GMainLoop *loop;
-  GstElement *play;
   GstBus *bus;
 
   char file[_MAX_PATH] = "file:///";
@@ -92,7 +102,7 @@ int main (int argc, char *argv[]) {
   /*   init GTK && GTS   */
   gtk_init (&argc, &argv);
   gst_init (&argc, &argv);
-  loop = g_main_loop_new (NULL, FALSE);
+  // loop = g_main_loop_new (NULL, FALSE);
 
   play = gst_element_factory_make ("playbin", NULL);
   g_object_set (G_OBJECT (play), "uri", file, NULL);
@@ -109,8 +119,6 @@ int main (int argc, char *argv[]) {
   // FIXME: Intentar no correr el programa como una aplicaccion, correrlo con un main()
   // FIXME: No iniciar el loop de la aplicacion (mas bien ocupar el del programa) y no iniciar el loop del GTS si lo incertas en un overley/layer/etc
   activate(NULL,NULL);
-
-  gst_element_set_state (play, GST_STATE_PLAYING);
   gtk_main();
   /*   Limpieza   */
   gst_element_set_state (play, GST_STATE_NULL);
@@ -139,14 +147,15 @@ char* fullPath( char * partialPath ) {
 }
 
 gboolean bus_callback(GstBus *bus, GstMessage *msg, gpointer data) {
-  GstElement *play = GST_ELEMENT(data);
-  switch (GST_MESSAGE_TYPE(msg)) {
+  GstElement *plays = GST_ELEMENT(data);
+  switch (GST_MESSAGE_TYPE(msg))  {
   case GST_MESSAGE_EOS:
-      if (!gst_element_seek(play,
+      g_print("Reiniciando LOOP!\n");
+      if (!gst_element_seek(plays,
                   1.0, GST_FORMAT_TIME, GST_SEEK_FLAG_FLUSH,
                   GST_SEEK_TYPE_SET,  2000000000, //2 seg
                   GST_SEEK_TYPE_NONE, GST_CLOCK_TIME_NONE)) {
-          g_print("Fallo del Seek!\n");
+          g_print("Seek failed!\n");
       }
       break;
   default:
@@ -155,8 +164,11 @@ gboolean bus_callback(GstBus *bus, GstMessage *msg, gpointer data) {
   return TRUE;
 }
 
-void motionCardMovement(){
-  g_print("Motion on Card Triggered!");
+void motionCardMovement(GObject *buttonInit, int dataMethod){
+  if(dataMethod == 1){
+    g_print("Motion on Card Triggered!");
+    gtk_widget_set_opacity(GTK_WIDGET(buttonInit), 0.5);
+  }
 }
 
 void menuhowPlay(GObject *buttonInit, gpointer user_data) {
