@@ -20,7 +20,7 @@ GObject *windowMain;
 static GstElement *playbin, *play, *sink;
 
 /*   Funciones   */
-void motionCardMovement(GObject *, int);
+void motionCardMovement(GObject *, GdkEventConfigure *, gpointer );
 void profiles(GObject *, GtkBuilder* );
 void playerSelectFn(GObject *, GtkBuilder* );
 void SelectVSFn(GObject *, GtkBuilder* );
@@ -53,7 +53,7 @@ static void activate(GtkApplication *app, gpointer user_data) {
     /* Ventana Principal */
   windowMain = gtk_builder_get_object (builder, "main");
   //g_signal_connect (windowMain, "motion-notify-event", G_CALLBACK (motionCardMovement), NULL);
-  gtk_widget_add_events(GTK_WIDGET(windowMain), GDK_POINTER_MOTION_MASK);
+  //gtk_widget_add_events(GTK_WIDGET(windowMain), GDK_POINTER_MOTION_MASK);
 
 
   // g_signal_connect (windowMain, "destroy", G_CALLBACK (gtk_main_quit), NULL);
@@ -74,18 +74,21 @@ static void activate(GtkApplication *app, gpointer user_data) {
 
     /* Individuakes Imagenes */
   event = gtk_builder_get_object (builder, "CentralMotion");
+  img = gtk_builder_get_object (builder, "Central1");
   g_signal_connect (event, "button-release-event", G_CALLBACK (menuPlay), NULL);
-  g_signal_connect (event, "enter_notify_event", G_CALLBACK (motionCardMovement), 1);
-  g_signal_connect (event, "leave_notify_event", G_CALLBACK (motionCardMovement), 0);
+  g_signal_connect (event, "enter_notify_event", G_CALLBACK (motionCardMovement), NULL);
+  g_signal_connect (event, "leave_notify_event", G_CALLBACK (motionCardMovement), NULL);
 
   event = gtk_builder_get_object (builder, "LeftMotion");
+  img = gtk_builder_get_object (builder, "Left1");
   g_signal_connect (event, "button-release-event", G_CALLBACK (menuhowPlay), NULL);
-  g_signal_connect (event, "enter_notify_event", G_CALLBACK (motionCardMovement), 1);
-  g_signal_connect (event, "leave_notify_event", G_CALLBACK (motionCardMovement), 0);
+  g_signal_connect (event, "enter_notify_event", G_CALLBACK (motionCardMovement), NULL);
+  g_signal_connect (event, "leave_notify_event", G_CALLBACK (motionCardMovement), NULL);
 
   event = gtk_builder_get_object (builder, "RightMotion");
-  g_signal_connect (event, "enter_notify_event", G_CALLBACK (motionCardMovement), 1);
-  g_signal_connect (event, "leave_notify_event", G_CALLBACK (motionCardMovement), 0);
+  img = gtk_builder_get_object (builder, "Right1");
+  g_signal_connect (event, "enter_notify_event", G_CALLBACK (motionCardMovement), NULL);
+  g_signal_connect (event, "leave_notify_event", G_CALLBACK (motionCardMovement), NULL);
 
 
   gst_element_set_state (play, GST_STATE_PLAYING);
@@ -164,10 +167,19 @@ gboolean bus_callback(GstBus *bus, GstMessage *msg, gpointer data) {
   return TRUE;
 }
 
-void motionCardMovement(GObject *buttonInit, int dataMethod){
-  if(dataMethod == 1){
-    g_print("Motion on Card Triggered!");
-    gtk_widget_set_opacity(GTK_WIDGET(buttonInit), 0.5);
+void motionCardMovement(GObject *eventBox, GdkEventConfigure *event, gpointer data){
+  int time = 1000; // Tiempo en milisegundos
+  GdkEventType eventType = event->type;
+  if(event->type == GDK_ENTER_NOTIFY){
+    for (int i = 0; i < 10; i++) {
+      gtk_widget_set_margin_bottom(GTK_WIDGET(eventBox), 10*i);
+      Sleep(10);
+    }
+  } else if (event->type == GDK_LEAVE_NOTIFY){
+    for (int i = 10; i < 1; i--) {
+      gtk_widget_set_margin_bottom(GTK_WIDGET(eventBox), 10*i);
+      Sleep(10);
+    }
   }
 }
 
