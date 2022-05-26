@@ -17,7 +17,7 @@
           <placeholder/>
         </child>
         <child type="overlay">
-          <object class="GtkButton" id="Objetivo2">
+          <object class="GtkButton" id="ObjetivoBtn">
             <property name="width-request">239</property>
             <property name="height-request">90</property>
             <property name="visible">True</property>

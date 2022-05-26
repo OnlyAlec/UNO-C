@@ -15,9 +15,94 @@
 #include <gst/video/videooverlay.h>
 #include <gdk/gdkwin32.h>
 
+static const gchar *image_names[] = {
+  "assets\\MainCards\\small\\blue_0.png",
+  "assets\\MainCards\\small\\blue_1.png",
+  "assets\\MainCards\\small\\blue_2.png",
+  "assets\\MainCards\\small\\blue_3.png",
+  "assets\\MainCards\\small\\blue_4.png",
+  "assets\\MainCards\\small\\blue_5.png",
+  "assets\\MainCards\\small\\blue_6.png",
+  "assets\\MainCards\\small\\blue_7.png",
+  "assets\\MainCards\\small\\blue_8.png",
+  "assets\\MainCards\\small\\blue_9.png",
+  "assets\\MainCards\\small\\blue_picker.png",
+  "assets\\MainCards\\small\\blue_reverse.png",
+  "assets\\MainCards\\small\\blue_skip.png",
+  "assets\\MainCards\\small\\green_0.png",
+  "assets\\MainCards\\small\\green_1.png",
+  "assets\\MainCards\\small\\green_2.png",
+  "assets\\MainCards\\small\\green_3.png",
+  "assets\\MainCards\\small\\green_4.png",
+  "assets\\MainCards\\small\\green_5.png",
+  "assets\\MainCards\\small\\green_6.png",
+  "assets\\MainCards\\small\\green_7.png",
+  "assets\\MainCards\\small\\green_8.png",
+  "assets\\MainCards\\small\\green_9.png",
+  "assets\\MainCards\\small\\green_picker.png",
+  "assets\\MainCards\\small\\green_reverse.png",
+  "assets\\MainCards\\small\\green_skip.png",
+  "assets\\MainCards\\small\\red_0.png",
+  "assets\\MainCards\\small\\red_1.png",
+  "assets\\MainCards\\small\\red_2.png",
+  "assets\\MainCards\\small\\red_3.png",
+  "assets\\MainCards\\small\\red_4.png",
+  "assets\\MainCards\\small\\red_5.png",
+  "assets\\MainCards\\small\\red_6.png",
+  "assets\\MainCards\\small\\red_7.png",
+  "assets\\MainCards\\small\\red_8.png",
+  "assets\\MainCards\\small\\red_9.png",
+  "assets\\MainCards\\small\\red_picker.png",
+  "assets\\MainCards\\small\\red_reverse.png",
+  "assets\\MainCards\\small\\red_skip.png",
+  "assets\\MainCards\\small\\yellow_0.png",
+  "assets\\MainCards\\small\\yellow_1.png",
+  "assets\\MainCards\\small\\yellow_2.png",
+  "assets\\MainCards\\small\\yellow_3.png",
+  "assets\\MainCards\\small\\yellow_4.png",
+  "assets\\MainCards\\small\\yellow_5.png",
+  "assets\\MainCards\\small\\yellow_6.png",
+  "assets\\MainCards\\small\\yellow_7.png",
+  "assets\\MainCards\\small\\yellow_8.png",
+  "assets\\MainCards\\small\\yellow_9.png",
+  "assets\\MainCards\\small\\yellow_picker.png",
+  "assets\\MainCards\\small\\yellow_reverse.png",
+  "assets\\MainCards\\small\\yellow_skip.png",
+  "assets\\MainCards\\small\\wild_color_changer.png",
+  "assets\\MainCards\\small\\wild_pick_four.png",
+  "assets\\MainCards\\small\\card_back_alt.png",
+  "assets\\MainCards\\small\\card_back.png"
+};
+
+
+/*Estructuras*/
+typedef struct{
+  char apodo[20];
+  char ID[20];
+  int src;
+} perfil;
+typedef struct{
+  char color[15];
+  int numero; // 0-9 : Numeors, 10-14 : Acciones
+  int src; //Variable para identificar la direcccion de la carta en el arreglo
+} cartas;
+typedef struct {
+  int numJugadores;
+  perfil *jugadores;
+  char modJuego[20];
+} Menu;
+
+typedef struct{
+  cartas mazo[54];
+  perfil juga[4];
+}Juego;
+
 /*   Globales   */
 GObject *windowMain;
 static GstElement *playbin, *play, *sink;
+Menu DB_Menu;
+Juego DB_Juego;
+
 
 /*   Funciones   */
 void motionCardMovement(GObject *, GdkEventConfigure *, gpointer );
@@ -211,9 +296,9 @@ void menuhowPlay(GObject *buttonInit, gpointer user_data) {
   gtk_widget_set_size_request(video_drawing_area, 1280, 720);
   gtk_container_add(GTK_CONTAINER(overlayArea), video_drawing_area);
   /*   Botones   */
-  button = gtk_builder_get_object (builder, "Objetivo");
+  button = gtk_builder_get_object (builder, "ObjetivoBtn");
   g_signal_connect (button, "clicked", G_CALLBACK (menuObj), builder);
-  button = gtk_builder_get_object (builder, "Instruc");
+  button = gtk_builder_get_object (builder, "InstruccionesBtn");
   g_signal_connect (button, "clicked", G_CALLBACK (menuInstruc), builder);
 
   gst_element_set_state (play, GST_STATE_PLAYING);
@@ -324,8 +409,10 @@ void menuLocal(GObject *buttonInit, GtkBuilder* builder){
   gtk_widget_set_name(GTK_WIDGET(Eventimg), "4P");
 
   buttonBot = gtk_builder_get_object (builder, "Bot");
+  gtk_widget_set_name(GTK_WIDGET(buttonBot), "Bot");
   g_signal_connect (buttonBot, "button-release-event", G_CALLBACK(SelectVSFn), builder);
   buttonHuman = gtk_builder_get_object (builder, "Human");
+  gtk_widget_set_name(GTK_WIDGET(buttonHuman), "Human");
   g_signal_connect (buttonHuman, "button-release-event", G_CALLBACK(SelectVSFn), builder);
 
   gtk_widget_show_all(GTK_WIDGET(window));
@@ -355,16 +442,16 @@ void playerSelectFn(GObject *playerImg, GtkBuilder* builder){
   GObject *button;
   const gchar* data;
   data = gtk_widget_get_name(GTK_WIDGET(playerImg));
-  g_print("Player Select = %s!\n", data);
-  // Meter dato a la estructura de datos globales
-  /*   AQUI   */
-  if (strcmp(data, "1") == 0){
+  DB_Menu.numJugadores = atoi(data[0]);
+  g_print("Numero de Jugadores = %s!\n", DB_Menu.numJugadores);
+  
+  /* Si solo es un jugador, solo puede jugar con BOTS. De lo contrario puede jugar con HUMAN o BOTS */
+  if (DB_Menu.numJugadores >= 2){
     button = gtk_builder_get_object (builder, "Human");
     gtk_widget_show(GTK_WIDGET(button));
-  } else {
-    button = gtk_builder_get_object (builder, "Bot");
-    gtk_widget_show(GTK_WIDGET(button));
   }
+  button = gtk_builder_get_object (builder, "Bot");
+  gtk_widget_show(GTK_WIDGET(button));
   g_object_unref(builder);
 }
 
@@ -374,8 +461,11 @@ void SelectVSFn(GObject *vsImg, GtkBuilder* builder){
 
   data = gtk_widget_get_name(GTK_WIDGET(vsImg));
   g_print("VS Select = %s!\n", data);
-    // Meter dato a la estructura de datos globales
-    /*   AQUI   */
+  if (strcmp(data, "Bot") == 0)
+    strcpy("Bot", DB_Menu.modJuego);
+  else if (strcmp(data, "Human") == 0)
+    strcpy("Human", DB_Menu.modJuego);
+  
   playerSelectFn(vsImg,builder);
   g_object_unref(builder);
 }
