@@ -420,24 +420,6 @@ void menuLocal(GObject *buttonInit, GtkBuilder* builder){
   gtk_widget_hide(GTK_WIDGET(buttonHuman));
 }
 
-void profiles(GObject *buttonInit, GtkBuilder* builder){
-      /*   Cierre de ventana   */
-  GtkWindow *windowClose;
-  windowClose = GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(buttonInit)));
-  if(GTK_IS_WINDOW(windowClose)){
-    g_print("Se cierra: %s\n", gtk_window_get_title (GTK_WINDOW (windowClose)));
-    gtk_widget_destroy(GTK_WIDGET(windowClose));
-  }
-
-  GtkWidget *window;
-  window = GTK_WIDGET(gtk_builder_get_object (builder, "ProfileBuild"));
-  // g_signal_connect (window, "destroy", G_CALLBACK (gtk_main_quit), NULL);
-
-  /*  Repeticion de ventana   */
-  /* Necesito la estructura de datos globales para poder hacer el ciclo de la funcion */
-  // menuLocal(buttonInit, builder, players);
-}
-
 void playerSelectFn(GObject *playerImg, GtkBuilder* builder){
   GObject *button;
   const gchar* data;
@@ -465,8 +447,6 @@ void SelectVSFn(GObject *vsImg, GtkBuilder* builder){
     strcpy("Bot", DB_Menu.modJuego);
   else if (strcmp(data, "Human") == 0)
     strcpy("Human", DB_Menu.modJuego);
-  
-  playerSelectFn(vsImg,builder);
   g_object_unref(builder);
 }
 
@@ -478,4 +458,27 @@ void returnMain(GObject *init, gpointer* user_data){
     gtk_widget_destroy(GTK_WIDGET(windowClose));
   }
   main(0,NULL);
+}
+
+void profiles(GObject *buttonInit, GtkBuilder* builder){
+  /*   Cierre de ventana   */
+  GtkWindow *windowClose;
+  windowClose = GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(buttonInit)));
+  if(GTK_IS_WINDOW(windowClose)){
+    g_print("Se cierra: %s\n", gtk_window_get_title (GTK_WINDOW (windowClose)));
+    gtk_widget_destroy(GTK_WIDGET(windowClose));
+  }
+
+  GtkWidget *window;
+  window = GTK_WIDGET(gtk_builder_get_object (builder, "ProfileBuild"));
+  // g_signal_connect (window, "destroy", G_CALLBACK (gtk_main_quit), NULL);
+
+  /*   Repeticion de ventana   */
+  int i=0;
+  while (DB_Menu.numJugadores < i) {
+    gtk_widget_show_all(GTK_WIDGET(window)) 
+
+    i++;
+  }
+  
 }
