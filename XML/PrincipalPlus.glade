@@ -67,60 +67,71 @@
       </object>
     </child>
   </object>
-  <!-- Inicio del Menu -->
   <object class="GtkWindow" id="main">
-    <property name="width-request">970</property>
-    <property name="height-request">577</property>
+    <property name="width-request">1280</property>
+    <property name="height-request">720</property>
     <property name="can-focus">False</property>
+    <property name="default-width">1280</property>
+    <property name="default-height">720</property>
     <child>
-      <object class="GtkLayout" id="MainLayout">
+      <object class="GtkOverlay" id="Overlay">
+        <property name="width-request">1280</property>
+        <property name="height-request">720</property>
         <property name="visible">True</property>
         <property name="can-focus">False</property>
         <child>
-          <object class="GtkDrawingArea" id="bg-video">
-            <property name="width-request">970</property>
-            <property name="height-request">577</property>
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
-          </object>
+          <placeholder/>
         </child>
-        <child>
+        <child type="overlay">
           <object class="GtkToggleButton" id="SFX-Btn1">
             <property name="width-request">60</property>
             <property name="height-request">60</property>
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="receives-default">True</property>
+            <property name="halign">start</property>
+            <property name="valign">start</property>
+            <property name="margin-start">20</property>
+            <property name="margin-end">1210</property>
+            <property name="margin-top">10</property>
+            <property name="margin-bottom">1000</property>
             <property name="image">SFX-Img1</property>
             <property name="active">True</property>
           </object>
-          <packing>
-            <property name="x">15</property>
-            <property name="y">15</property>
-          </packing>
         </child>
-        <child>
+        <child type="overlay">
           <object class="GtkToggleButton" id="Music-Btn1">
             <property name="width-request">60</property>
             <property name="height-request">60</property>
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="receives-default">True</property>
+            <property name="halign">start</property>
+            <property name="valign">start</property>
+            <property name="margin-start">100</property>
+            <property name="margin-end">1210</property>
+            <property name="margin-top">10</property>
+            <property name="margin-bottom">650</property>
             <property name="image">Music-Img1</property>
             <property name="active">True</property>
           </object>
           <packing>
-            <property name="x">80</property>
-            <property name="y">15</property>
+            <property name="index">1</property>
           </packing>
         </child>
-        <child>
+        <child type="overlay">
           <object class="GtkMenuButton" id="Menu-Btn1">
             <property name="width-request">50</property>
             <property name="height-request">40</property>
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="receives-default">True</property>
+            <property name="halign">start</property>
+            <property name="valign">end</property>
+            <property name="margin-start">10</property>
+            <property name="margin-end">1210</property>
+            <property name="margin-top">660</property>
+            <property name="margin-bottom">20</property>
             <property name="direction">up</property>
             <property name="popover">popover1</property>
             <child>
@@ -133,11 +144,10 @@
             </child>
           </object>
           <packing>
-            <property name="x">10</property>
-            <property name="y">510</property>
+            <property name="index">2</property>
           </packing>
         </child>
-        <child>
+        <child type="overlay">
           <object class="GtkButton" id="Acerca">
             <property name="label" translatable="yes">Acerca de Nosotros</property>
             <property name="width-request">137</property>
@@ -145,51 +155,62 @@
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="receives-default">True</property>
+            <property name="halign">end</property>
+            <property name="valign">start</property>
+            <property name="margin-end">20</property>
+            <property name="margin-top">15</property>
           </object>
           <packing>
-            <property name="x">808</property>
-            <property name="y">10</property>
+            <property name="index">3</property>
           </packing>
         </child>
-        <child>
+        <child type="overlay">
           <object class="GtkImage" id="Logo">
             <property name="width-request">433</property>
             <property name="height-request">217</property>
             <property name="visible">True</property>
             <property name="can-focus">False</property>
+            <property name="halign">center</property>
+            <property name="valign">start</property>
             <property name="pixbuf">..\assets\logos\RetroUno_W.png</property>
           </object>
           <packing>
-            <property name="x">256</property>
+            <property name="index">4</property>
           </packing>
         </child>
-        <child>
+        <child type="overlay">
           <object class="GtkEventBox" id="CentralMotion">
-            <property name="width-request">100</property>
-            <property name="height-request">80</property>
+            <property name="width-request">220</property>
+            <property name="height-request">330</property>
             <property name="visible">True</property>
             <property name="can-focus">False</property>
+            <property name="halign">center</property>
+            <property name="valign">center</property>
+            <property name="margin-top">80</property>
             <child>
               <object class="GtkImage" id="Central1">
                 <property name="width-request">130</property>
                 <property name="height-request">182</property>
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="pixbuf">..\assets\MainCards\small\card_back_alt.png</property>
+                <property name="pixbuf">..\assets\MenuCards\CartaInicio.png</property>
               </object>
             </child>
           </object>
           <packing>
-            <property name="x">407</property>
-            <property name="y">239</property>
+            <property name="index">5</property>
           </packing>
         </child>
-        <child>
+        <child type="overlay">
           <object class="GtkEventBox" id="RightMotion">
             <property name="width-request">100</property>
             <property name="height-request">80</property>
             <property name="visible">True</property>
             <property name="can-focus">False</property>
+            <property name="halign">end</property>
+            <property name="valign">center</property>
+            <property name="margin-end">250</property>
+            <property name="margin-top">120</property>
             <signal name="button-release-event" handler="gtk_main_quit" swapped="no"/>
             <child>
               <object class="GtkImage" id="Right1">
@@ -197,43 +218,48 @@
                 <property name="height-request">182</property>
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="pixbuf">..\assets\MainCards\small\card_back_alt.png</property>
+                <property name="pixbuf">..\assets\MenuCards\CartaSalir.png</property>
               </object>
             </child>
           </object>
           <packing>
-            <property name="x">607</property>
-            <property name="y">259</property>
+            <property name="index">6</property>
           </packing>
         </child>
-        <child>
+        <child type="overlay">
           <object class="GtkEventBox" id="LeftMotion">
             <property name="width-request">100</property>
             <property name="height-request">80</property>
             <property name="visible">True</property>
             <property name="can-focus">False</property>
+            <property name="halign">start</property>
+            <property name="valign">center</property>
+            <property name="margin-start">250</property>
+            <property name="margin-top">120</property>
             <child>
               <object class="GtkImage" id="Left1">
                 <property name="width-request">130</property>
                 <property name="height-request">182</property>
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="pixbuf">..\assets\MainCards\small\card_back_alt.png</property>
+                <property name="pixbuf">..\assets\MenuCards\CartaHow.png</property>
               </object>
             </child>
           </object>
           <packing>
-            <property name="x">207</property>
-            <property name="y">259</property>
+            <property name="index">7</property>
           </packing>
         </child>
-        <child>
+        <child type="overlay">
           <object class="GtkBox" id="Profile">
             <property name="width-request">100</property>
             <property name="height-request">80</property>
             <property name="visible">True</property>
             <property name="can-focus">False</property>
-            <property name="margin-end">10</property>
+            <property name="halign">end</property>
+            <property name="valign">end</property>
+            <property name="margin-end">20</property>
+            <property name="margin-bottom">15</property>
             <property name="spacing">10</property>
             <property name="homogeneous">True</property>
             <child>
@@ -295,8 +321,7 @@
             </child>
           </object>
           <packing>
-            <property name="x">740</property>
-            <property name="y">455</property>
+            <property name="index">8</property>
           </packing>
         </child>
       </object>
