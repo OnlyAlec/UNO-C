@@ -64,9 +64,9 @@ int main()
                     printf("\n\tPLAYER %d\nUSER NAME:",i+1);
                     fflush(stdin);
                     gets(perfil.nom);
-                    printf("ID:");
+                    /*printf("ID:");
                     fflush(stdin);
-                    gets(perfil.ID);
+                    gets(perfil.ID);*/
                 }
                 reparte(perfil,cards); 
              //system("cls");
