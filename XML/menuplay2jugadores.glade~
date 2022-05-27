@@ -22,22 +22,16 @@
           </object>
         </child>
         <child>
-          <object class="GtkBox" id="Arriba">
+          <object class="GtkBox">
             <property name="width-request">100</property>
             <property name="height-request">80</property>
             <property name="visible">True</property>
             <property name="can-focus">False</property>
             <child>
-              <object class="GtkEventBox" id="Ar1">
+              <object class="GtkImage">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <child>
-                  <object class="GtkImage" id="IAr1">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="pixbuf">..\assets\MainCards\small\card_back.png</property>
-                  </object>
-                </child>
+                <property name="pixbuf">..\assets\MainCards\small\card_back.png</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -46,16 +40,10 @@
               </packing>
             </child>
             <child>
-              <object class="GtkEventBox" id="Ar2">
+              <object class="GtkImage">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <child>
-                  <object class="GtkImage" id="IAr2">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="pixbuf">..\assets\MainCards\small\card_back.png</property>
-                  </object>
-                </child>
+                <property name="pixbuf">..\assets\MainCards\small\card_back.png</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -64,16 +52,10 @@
               </packing>
             </child>
             <child>
-              <object class="GtkEventBox" id="Ar3">
+              <object class="GtkImage">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <child>
-                  <object class="GtkImage" id="IAr3">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="pixbuf">..\assets\MainCards\small\card_back.png</property>
-                  </object>
-                </child>
+                <property name="pixbuf">..\assets\MainCards\small\card_back.png</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -82,16 +64,10 @@
               </packing>
             </child>
             <child>
-              <object class="GtkEventBox" id="Ar4">
+              <object class="GtkImage">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <child>
-                  <object class="GtkImage" id="IAr4">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="pixbuf">..\assets\MainCards\small\card_back.png</property>
-                  </object>
-                </child>
+                <property name="pixbuf">..\assets\MainCards\small\card_back.png</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -100,16 +76,10 @@
               </packing>
             </child>
             <child>
-              <object class="GtkEventBox" id="Ar5">
+              <object class="GtkImage">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <child>
-                  <object class="GtkImage" id="IAr5">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="pixbuf">..\assets\MainCards\small\card_back.png</property>
-                  </object>
-                </child>
+                <property name="pixbuf">..\assets\MainCards\small\card_back.png</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -118,16 +88,10 @@
               </packing>
             </child>
             <child>
-              <object class="GtkEventBox" id="Ar6">
+              <object class="GtkImage">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <child>
-                  <object class="GtkImage" id="IAr6">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="pixbuf">..\assets\MainCards\small\card_back.png</property>
-                  </object>
-                </child>
+                <property name="pixbuf">..\assets\MainCards\small\card_back.png</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -136,16 +100,10 @@
               </packing>
             </child>
             <child>
-              <object class="GtkEventBox" id="Ar7">
+              <object class="GtkImage">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <child>
-                  <object class="GtkImage" id="IAr7">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="pixbuf">..\assets\MainCards\small\card_back.png</property>
-                  </object>
-                </child>
+                <property name="pixbuf">..\assets\MainCards\small\card_back.png</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -160,22 +118,16 @@
           </packing>
         </child>
         <child>
-          <object class="GtkBox" id="Abajo">
+          <object class="GtkBox">
             <property name="width-request">100</property>
             <property name="height-request">80</property>
             <property name="visible">True</property>
             <property name="can-focus">False</property>
             <child>
-              <object class="GtkEventBox" id="Ab1">
+              <object class="GtkImage">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <child>
-                  <object class="GtkImage" id="IAb1">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="pixbuf">..\assets\MainCards\small\card_back.png</property>
-                  </object>
-                </child>
+                <property name="pixbuf">..\assets\MainCards\small\card_back.png</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -184,16 +136,10 @@
               </packing>
             </child>
             <child>
-              <object class="GtkEventBox" id="Ab2">
+              <object class="GtkImage">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <child>
-                  <object class="GtkImage" id="IAb2">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="pixbuf">..\assets\MainCards\small\card_back.png</property>
-                  </object>
-                </child>
+                <property name="pixbuf">..\assets\MainCards\small\card_back.png</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -202,16 +148,10 @@
               </packing>
             </child>
             <child>
-              <object class="GtkEventBox" id="Ab3">
+              <object class="GtkImage">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <child>
-                  <object class="GtkImage" id="IAb3">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="pixbuf">..\assets\MainCards\small\card_back.png</property>
-                  </object>
-                </child>
+                <property name="pixbuf">..\assets\MainCards\small\card_back.png</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -220,16 +160,10 @@
               </packing>
             </child>
             <child>
-              <object class="GtkEventBox" id="Ab4">
+              <object class="GtkImage">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <child>
-                  <object class="GtkImage" id="IAb4">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="pixbuf">..\assets\MainCards\small\card_back.png</property>
-                  </object>
-                </child>
+                <property name="pixbuf">..\assets\MainCards\small\card_back.png</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -238,16 +172,10 @@
               </packing>
             </child>
             <child>
-              <object class="GtkEventBox" id="Ab5">
+              <object class="GtkImage">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <child>
-                  <object class="GtkImage" id="IAb5">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="pixbuf">..\assets\MainCards\small\card_back.png</property>
-                  </object>
-                </child>
+                <property name="pixbuf">..\assets\MainCards\small\card_back.png</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -256,16 +184,10 @@
               </packing>
             </child>
             <child>
-              <object class="GtkEventBox" id="Ab6">
+              <object class="GtkImage">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <child>
-                  <object class="GtkImage" id="IAb6">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="pixbuf">..\assets\MainCards\small\card_back.png</property>
-                  </object>
-                </child>
+                <property name="pixbuf">..\assets\MainCards\small\card_back.png</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -274,16 +196,10 @@
               </packing>
             </child>
             <child>
-              <object class="GtkEventBox" id="Ab7">
+              <object class="GtkImage">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <child>
-                  <object class="GtkImage" id="IAb7">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="pixbuf">..\assets\MainCards\small\card_back.png</property>
-                  </object>
-                </child>
+                <property name="pixbuf">..\assets\MainCards\small\card_back.png</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -298,22 +214,16 @@
           </packing>
         </child>
         <child>
-          <object class="GtkBox" id="Medio">
+          <object class="GtkBox">
             <property name="width-request">100</property>
             <property name="height-request">80</property>
             <property name="visible">True</property>
             <property name="can-focus">False</property>
             <child>
-              <object class="GtkEventBox" id="Comer">
+              <object class="GtkImage">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <child>
-                  <object class="GtkImage" id="Icomer">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="pixbuf">..\assets\MainCards\small\card_back.png</property>
-                  </object>
-                </child>
+                <property name="pixbuf">..\assets\MainCards\small\card_back.png</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -322,16 +232,10 @@
               </packing>
             </child>
             <child>
-              <object class="GtkEventBox" id="Carta">
+              <object class="GtkImage">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <child>
-                  <object class="GtkImage" id="ICarta">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="pixbuf">..\assets\MainCards\small\card_back.png</property>
-                  </object>
-                </child>
+                <property name="pixbuf">..\assets\MainCards\small\card_back.png</property>
               </object>
               <packing>
                 <property name="expand">False</property>

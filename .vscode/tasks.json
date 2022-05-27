@@ -2,8 +2,9 @@
     "tasks": [
         {
             "type": "shell",
+
             "label": "Remove debug file",
-            "command": "rm ${fileBasenameNoExtension}.exe",
+            "command": "del ${fileBasenameNoExtension}.exe",
             "options": {
                 "cwd": "${fileDirname}"
             },
@@ -11,7 +12,7 @@
             "detail": "File to remove!",
             "presentation": {
                 "echo": true,
-                "reveal": "silent",
+                "reveal": "always",
                 "focus": false,
                 "panel": "dedicated",
                 "showReuseMessage": true,
