@@ -107,7 +107,7 @@ typedef struct{
 }Juego;
 
 /*   Globales   */
-GObject *windowMain, *eventBot, *eventHuman;
+GObject *windowMain, *eventBot, *eventHuman, *imgGlobal;
 static GstElement *playbin, *play, *sink;
 static int registrados = 0, *apRegistrados = &registrados;
 Menu DB_Menu;
@@ -138,7 +138,7 @@ void guardarApodo(GObject *);
 void guardarPFP(GObject *);
 // Juego Principal
 void startGame();
-void ocultar();
+void ocultar(GObject *);
 
 int main (int argc, char *argv[]) {
   g_print("( ▀ v ▀ ) CORRIENDO!\n");
@@ -578,10 +578,58 @@ void guardarPFP(GObject *playerImg){
 /*   Funciones para el JUEGO   */
 void startGame(){
 
+  srand(time(NULL));
+  int a, b, j=0, end=0;
   GtkBuilder *builder;
-  GObject *boxA, *boxAB, *boxI, *boxD, *event, *img;
+  GObject *boxA, *boxAB, *boxI, *boxD, *event;
   GError *error = NULL;
   GtkWidget *window;
+  
+  //TODO: Ocupar las estructuras que ya estan en DB_Menu
+  cartas jugador1[7];
+  cartas jugador2[7];
+
+for(int i=0; i<7; i++){
+  a=rand()%56;
+  b=rand()%56;
+    jugador1->src[i]=image_names[a];
+    jugador2->src[i]=image_names[b];
+
+    // while(jugador2->src[i][j]!='r' && band == 0){
+    //   if(jugador2->src[i][j]=='r')
+    //     band=1;
+    //   }
+    //   j++;
+    // }
+    // strcpy(jugador1->color, "Rojo");
+
+    while(end != 1){
+      switch(jugador1->src[i][j]) {
+        case 'r':
+          strcpy(jugador1->color, "Rojo");
+            end=1;
+          break;
+        case 'b':
+          strcpy(jugador1->color, "Azul");
+          end=1;
+          break;
+        case 'y':
+          strcpy(jugador1->color, "Amarillo");
+          end=1;
+          break;
+        case 'g':
+          strcpy(jugador1->color, "Verde");
+          end=1;
+          break;
+        default:
+          if(jugador1->src[i][j] != "\0")
+            j++;
+          else
+            end=1;
+          break;
+      }
+    }
+}
 
   g_print("Inicio del juego\n");
   builder = gtk_builder_new ();
@@ -598,42 +646,43 @@ void startGame(){
   boxAB = gtk_builder_get_object(builder, "Abajo");
 
   event = gtk_builder_get_object(builder, "Ab1");
-  img = gtk_builder_get_object(builder, "IAb1");
-  g_signal_connect(event, "button-release-event", G_CALLBACK(ocultar), img);
-  g_signal_connect (event, "enter_notify_event", G_CALLBACK (motionCard), img);
-  g_signal_connect (event, "leave_notify_event", G_CALLBACK (motionCard), img);
+  imgGlobal = gtk_builder_get_object(builder, "IAb1");
+  g_signal_connect(event, "button-release-event", G_CALLBACK(ocultar), imgGlobal);
+  g_signal_connect (event, "enter_notify_event", G_CALLBACK (motionCard), imgGlobal);
+  g_signal_connect (event, "leave_notify_event", G_CALLBACK (motionCard), imgGlobal);
 
   event = gtk_builder_get_object(builder, "Ab2");
-  img = gtk_builder_get_object(builder, "IAb2");
-  g_signal_connect(event, "button-release-event", G_CALLBACK(ocultar), img);
+  imgGlobal = gtk_builder_get_object(builder, "IAb2");
+  
+  g_signal_connect(event, "button-release-event", G_CALLBACK(ocultar), imgGlobal);
 
 
   event = gtk_builder_get_object(builder, "Ab3");
-  img = gtk_builder_get_object(builder, "IAb3");
-  g_signal_connect(event, "button-release-event", G_CALLBACK(ocultar), img);
+  imgGlobal = gtk_builder_get_object(builder, "IAb3");
+  g_signal_connect(event, "button-release-event", G_CALLBACK(ocultar), imgGlobal);
 
 
   event = gtk_builder_get_object(builder, "Ab4");
-  img = gtk_builder_get_object(builder, "IAb4");
-  g_signal_connect(event, "button-release-event", G_CALLBACK(ocultar), img);
+  imgGlobal = gtk_builder_get_object(builder, "IAb4");
+  g_signal_connect(event, "button-release-event", G_CALLBACK(ocultar), imgGlobal);
 
   event = gtk_builder_get_object(builder, "Ab5");
-  img = gtk_builder_get_object(builder, "IAb5");
-  g_signal_connect(event, "button-release-event", G_CALLBACK(ocultar), img);
+  imgGlobal = gtk_builder_get_object(builder, "IAb5");
+  g_signal_connect(event, "button-release-event", G_CALLBACK(ocultar), imgGlobal);
 
   event = gtk_builder_get_object(builder, "Ab6");
-  img = gtk_builder_get_object(builder, "IAb6");
-  g_signal_connect(event, "button-release-event", G_CALLBACK(ocultar), img);
+  imgGlobal = gtk_builder_get_object(builder, "IAb6");
+  g_signal_connect(event, "button-release-event", G_CALLBACK(ocultar), imgGlobal);
 
   event = gtk_builder_get_object(builder, "Ab7");
-  img = gtk_builder_get_object(builder, "IAb7");
-  g_signal_connect(event, "button-release-event", G_CALLBACK(ocultar), img);
-
+  imgGlobal = gtk_builder_get_object(builder, "IAb7");
+  g_signal_connect(event, "button-release-event", G_CALLBACK(ocultar), imgGlobal);
 
   gtk_widget_show_all(GTK_WIDGET(window));
 }
 
-void ocultar(GObject *event, GObject *img){
-  gtk_image_set_from_file(img, "assets\\MainCards\\CardInv.png");
-  // gtk_widget_hide(GTK_WIDGET(event));
+void ocultar(GObject *event){
+  GtkWidget *tmp = gtk_bin_get_child (GTK_WIDGET(event));
+  gtk_image_set_from_file(GTK_IMAGE(tmp), "assets\\MainCards\\CardInv.png");
+  gtk_widget_set_sensitive(GTK_WIDGET(event), FALSE);
 }
