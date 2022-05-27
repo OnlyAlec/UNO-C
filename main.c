@@ -167,7 +167,6 @@ gboolean bus_callback(GstBus *bus, GstMessage *msg, gpointer data) {
 }
 static void activateVideo(char * path ){
   GstBus *bus;
-
   char file[_MAX_PATH] = "file:///";
   strcat(file, fullPath(path));
 
