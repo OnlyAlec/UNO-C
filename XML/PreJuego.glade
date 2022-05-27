@@ -4,6 +4,9 @@
   <requires lib="gtk+" version="3.24"/>
   <object class="GtkWindow" id="ProfileBuild">
     <property name="can-focus">False</property>
+    <property name="title" translatable="yes">UNO - Seleccion de Avatar</property>
+    <property name="resizable">False</property>
+    <property name="window-position">center</property>
     <property name="default-width">1280</property>
     <property name="default-height">720</property>
     <child>
@@ -39,19 +42,25 @@
           </packing>
         </child>
         <child>
-          <object class="GtkBox" id="AvatarsM">
+          <object class="GtkBox" id="AvatarsBoxM">
             <property name="width-request">1087</property>
             <property name="height-request">215</property>
             <property name="visible">True</property>
             <property name="can-focus">False</property>
             <property name="spacing">5</property>
             <child>
-              <object class="GtkImage">
-                <property name="width-request">215</property>
-                <property name="height-request">215</property>
+              <object class="GtkEventBox" id="AvatarM1">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="pixbuf">..\assets\profiles\avatarW1.png</property>
+                <child>
+                  <object class="GtkImage">
+                    <property name="width-request">215</property>
+                    <property name="height-request">215</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="pixbuf">..\assets\profiles\avatarW1.png</property>
+                  </object>
+                </child>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -60,12 +69,18 @@
               </packing>
             </child>
             <child>
-              <object class="GtkImage">
-                <property name="width-request">215</property>
-                <property name="height-request">215</property>
+              <object class="GtkEventBox" id="AvatarM2">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="pixbuf">..\assets\profiles\avatarW2.png</property>
+                <child>
+                  <object class="GtkImage">
+                    <property name="width-request">215</property>
+                    <property name="height-request">215</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="pixbuf">..\assets\profiles\avatarW2.png</property>
+                  </object>
+                </child>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -74,12 +89,18 @@
               </packing>
             </child>
             <child>
-              <object class="GtkImage">
-                <property name="width-request">215</property>
-                <property name="height-request">215</property>
+              <object class="GtkEventBox" id="AvatarM3">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="pixbuf">..\assets\profiles\avatarW3.png</property>
+                <child>
+                  <object class="GtkImage">
+                    <property name="width-request">215</property>
+                    <property name="height-request">215</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="pixbuf">..\assets\profiles\avatarW3.png</property>
+                  </object>
+                </child>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -88,12 +109,18 @@
               </packing>
             </child>
             <child>
-              <object class="GtkImage">
-                <property name="width-request">215</property>
-                <property name="height-request">215</property>
+              <object class="GtkEventBox" id="AvatarM4">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="pixbuf">..\assets\profiles\avatarW4.png</property>
+                <child>
+                  <object class="GtkImage">
+                    <property name="width-request">215</property>
+                    <property name="height-request">215</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="pixbuf">..\assets\profiles\avatarW4.png</property>
+                  </object>
+                </child>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -102,12 +129,18 @@
               </packing>
             </child>
             <child>
-              <object class="GtkImage">
-                <property name="width-request">215</property>
-                <property name="height-request">215</property>
+              <object class="GtkEventBox" id="AvatarM5">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="pixbuf">..\assets\profiles\avatarW5.png</property>
+                <child>
+                  <object class="GtkImage">
+                    <property name="width-request">215</property>
+                    <property name="height-request">215</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="pixbuf">..\assets\profiles\avatarW5.png</property>
+                  </object>
+                </child>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -122,19 +155,25 @@
           </packing>
         </child>
         <child>
-          <object class="GtkBox" id="AvatarsH">
+          <object class="GtkBox" id="AvatarsBozH">
             <property name="width-request">100</property>
             <property name="height-request">80</property>
             <property name="visible">True</property>
             <property name="can-focus">False</property>
             <property name="spacing">5</property>
             <child>
-              <object class="GtkImage">
-                <property name="width-request">215</property>
-                <property name="height-request">215</property>
+              <object class="GtkEventBox" id="AvatarH1">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="pixbuf">..\assets\profiles\avatar1.png</property>
+                <child>
+                  <object class="GtkImage">
+                    <property name="width-request">215</property>
+                    <property name="height-request">215</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="pixbuf">..\assets\profiles\avatar1.png</property>
+                  </object>
+                </child>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -143,12 +182,18 @@
               </packing>
             </child>
             <child>
-              <object class="GtkImage">
-                <property name="width-request">215</property>
-                <property name="height-request">215</property>
+              <object class="GtkEventBox" id="AvatarH2">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="pixbuf">..\assets\profiles\avatarM2.png</property>
+                <child>
+                  <object class="GtkImage">
+                    <property name="width-request">215</property>
+                    <property name="height-request">215</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="pixbuf">..\assets\profiles\avatarM2.png</property>
+                  </object>
+                </child>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -157,12 +202,18 @@
               </packing>
             </child>
             <child>
-              <object class="GtkImage">
-                <property name="width-request">215</property>
-                <property name="height-request">215</property>
+              <object class="GtkEventBox" id="AvatarH3">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="pixbuf">..\assets\profiles\avatarM3.png</property>
+                <child>
+                  <object class="GtkImage">
+                    <property name="width-request">215</property>
+                    <property name="height-request">215</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="pixbuf">..\assets\profiles\avatarM3.png</property>
+                  </object>
+                </child>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -171,12 +222,18 @@
               </packing>
             </child>
             <child>
-              <object class="GtkImage">
-                <property name="width-request">215</property>
-                <property name="height-request">215</property>
+              <object class="GtkEventBox" id="AvatarH4">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="pixbuf">..\assets\profiles\avatarM4.png</property>
+                <child>
+                  <object class="GtkImage">
+                    <property name="width-request">215</property>
+                    <property name="height-request">215</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="pixbuf">..\assets\profiles\avatarM4.png</property>
+                  </object>
+                </child>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -185,12 +242,18 @@
               </packing>
             </child>
             <child>
-              <object class="GtkImage">
-                <property name="width-request">215</property>
-                <property name="height-request">215</property>
+              <object class="GtkEventBox" id="AvatarH5">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="pixbuf">..\assets\profiles\avatarM5.png</property>
+                <child>
+                  <object class="GtkImage">
+                    <property name="width-request">215</property>
+                    <property name="height-request">215</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="pixbuf">..\assets\profiles\avatarM5.png</property>
+                  </object>
+                </child>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -440,7 +503,7 @@
                     <property name="height-request">310</property>
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="pixbuf">..\assets\SelectCards\SelectCard_1.png</property>
+                    <property name="pixbuf">..\assets\MainCards\Jugadores\SelectCard_1.png</property>
                   </object>
                 </child>
               </object>
@@ -460,7 +523,7 @@
                     <property name="height-request">310</property>
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="pixbuf">..\assets\SelectCards\SelectCard_2.png</property>
+                    <property name="pixbuf">..\assets\MainCards\Jugadores\SelectCard_2.png</property>
                   </object>
                 </child>
               </object>
@@ -480,7 +543,7 @@
                     <property name="height-request">310</property>
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="pixbuf">..\assets\SelectCards\SelectCard_3.png</property>
+                    <property name="pixbuf">..\assets\MainCards\Jugadores\SelectCard_3.png</property>
                   </object>
                 </child>
               </object>
@@ -500,7 +563,7 @@
                     <property name="height-request">309</property>
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="pixbuf">..\assets\SelectCards\SelectCard_4.png</property>
+                    <property name="pixbuf">..\assets\MainCards\Jugadores\SelectCard_4.png</property>
                   </object>
                 </child>
               </object>

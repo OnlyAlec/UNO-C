@@ -18,7 +18,7 @@ El orden es el mismo de la lista siguiente.
     - Rojo    : #ec6464
     - Verde   : #64bb8e
     - Azul    : #2dbbde
-    - Amarillo: #
+    - Amarillo: #f7e359
 
 
 # Flujo de Ventanas

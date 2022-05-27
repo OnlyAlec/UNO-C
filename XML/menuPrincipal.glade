@@ -193,7 +193,7 @@
                 <property name="height-request">182</property>
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="pixbuf">..\assets\MenuCards\CartaInicio.png</property>
+                <property name="pixbuf">..\assets\MainCards\Menu\CartaInicio.png</property>
               </object>
             </child>
           </object>
@@ -218,7 +218,7 @@
                 <property name="height-request">182</property>
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="pixbuf">..\assets\MenuCards\CartaSalir.png</property>
+                <property name="pixbuf">..\assets\MainCards\Menu\CartaSalir.png</property>
               </object>
             </child>
           </object>
@@ -242,7 +242,7 @@
                 <property name="height-request">182</property>
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="pixbuf">..\assets\MenuCards\CartaHow.png</property>
+                <property name="pixbuf">..\assets\MainCards\Menu\CartaHow.png</property>
               </object>
             </child>
           </object>
