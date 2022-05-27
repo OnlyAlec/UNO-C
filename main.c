@@ -508,7 +508,7 @@ void menuSeleccionJugadores(GObject *buttonInit, GtkBuilder* builder){
   g_signal_connect (GTK_WIDGET(Eventimg), "button-release-event", G_CALLBACK(numJugadores), eventBot);
   Eventimg = gtk_builder_get_object (builder, "2P");
   gtk_widget_set_name(GTK_WIDGET(Eventimg), "2P");
-  g_signal_connect (GTK_WIDGET(Eventimg), "button-release-event", G_CALLBACK(numJugadores), window);
+  g_signal_connect (GTK_WIDGET(Eventimg), "button-release-event", G_CALLBACK(startGame), window);
   Eventimg = gtk_builder_get_object (builder, "3P");
   gtk_widget_set_name(GTK_WIDGET(Eventimg), "3P");
   g_signal_connect (GTK_WIDGET(Eventimg), "button-release-event",  G_CALLBACK(numJugadores), window);
