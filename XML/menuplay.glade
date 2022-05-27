@@ -2,7 +2,7 @@
 <!-- Generated with glade 3.38.2 -->
 <interface>
   <requires lib="gtk+" version="3.24"/>
-  <object class="GtkWindow" id="playmenu">
+  <object class="GtkWindow" id="playmenuconbotones">
     <property name="width-request">1280</property>
     <property name="height-request">720</property>
     <property name="can-focus">False</property>
