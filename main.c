@@ -10,23 +10,24 @@
  */
 
 /* TODO:
-  * - Corregir el levantamiento de cartas en el MENU PRINCIPAL
   * - Ver la manera de evitar que la ventana se espere al video asi evitando el error de GTS
   * - Cuando se lance el evento "DESTROY" evitar que termine la ventana si es que fue por un CALLBACK
+  *      -> Si se cierra una funcion con la X, entonces si validar el gtk_main_quit()
   * - Las variables "eventHuman, eventBot" no se deben declarar como globales, deberian ser locales.
   *   Sin embargo, como en la funcion donde se ocupa el show(), pierde la direccion de builder tambien
   *   se pierden las direcciones de estos bototenes.
   * - En algunas funciones se pierde la direccion de builder.
-  * - Una vez el usuario seleccione un avatar, desaparecer las demas img y solo quedar el avatar seleccionado
 */
 
+#include <time.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <gtk/gtk.h>
 #include <gst/gst.h>
 #include <gst/video/videooverlay.h>
 #include <gdk/gdkwin32.h>
 
-static const gchar *image_names[] = {
+static char *image_names[] = {
   "assets\\MainCards\\small\\blue_0.png",
   "assets\\MainCards\\small\\blue_1.png",
   "assets\\MainCards\\small\\blue_2.png",
@@ -93,7 +94,8 @@ typedef struct{
 typedef struct{
   char color[15];
   int numero; // 0-9 : Numeors, 10-14 : Acciones
-  char src[MAX_PATH]; //Variable para identificar la direcccion de la carta en el arreglo
+  char srcCompleto[MAX_PATH]; //Variable para identificar la direcccion de la carta en el arreglo
+  char srcSimple[50]; //Variable para identificar la direcccion de la carta en el arreglo
 } cartas;
 typedef struct {
   int numJugadores;
@@ -109,9 +111,12 @@ typedef struct{
 /*   Globales   */
 GObject *windowMain, *eventBot, *eventHuman, *imgGlobal;
 static GstElement *playbin, *play, *sink;
-static int registrados = 0, *apRegistrados = &registrados;
+static int registrados = 0, *apRegistrados = &registrados, closeAutoWindow = 0;
 Menu DB_Menu;
 Juego DB_Juego;
+
+/*   Globales para el juego   */
+int cardSelected=0;
 
 
 /*   Funciones   */
@@ -123,6 +128,7 @@ char* fullPath(char *);
 static void activate(GtkApplication *, gpointer);
 void motionCard(GObject *, GdkEventConfigure *, gpointer );
 void returnMain(GObject*, gpointer*);
+static void destroyWindow(GtkWidget *, GdkEventConfigure *, gpointer *);
 // Menus
 void menuPerfiles(GObject *, GtkBuilder* );
 void menuLocalOnline(GObject *, gpointer);
@@ -271,15 +277,17 @@ static void activate(GtkApplication *app, gpointer user_data) {
   g_print("Menu Principal (^_^) \n");
 }
 void motionCard(GObject *eventBox, GdkEventConfigure *event, gpointer data){
-  int time = 1000; // Tiempo en milisegundos
+  // Move "eventBox" upper when the event is GDK_ENTER_NOTIFY, if not move it down
+  
+  int time = 60; // Tiempo en milisegundos
   GdkEventType eventType = event->type;
   if(event->type == GDK_ENTER_NOTIFY){
-    for (int i = 0; i < 10; i++) {
-      gtk_widget_set_margin_bottom(GTK_WIDGET(eventBox), 10*i);
+    for (int i = 0; i < 5000; i++) {
+      gtk_widget_set_margin_bottom(GTK_WIDGET(eventBox), i/time);
     }
   } else if (event->type == GDK_LEAVE_NOTIFY){
-    for (int i = 10; i > 1; i--) {
-      gtk_widget_set_margin_bottom(GTK_WIDGET(eventBox), 10*i);
+    for (int i = 5000; i > 1; i--) {
+      gtk_widget_set_margin_bottom(GTK_WIDGET(eventBox), i/time);
     }
   }
 }
@@ -292,6 +300,12 @@ void returnMain(GObject *init, gpointer* user_data){
   }
   main(0,NULL);
 }
+static void destroyWindow(GtkWidget *window, GdkEventConfigure *eventConfigure, gpointer *data){
+  if (closeAutoWindow == 0){
+    gtk_widget_destroy(window);
+    gtk_main_quit();
+  }
+}
 
 /*  Funciones de Menus  */
 void menuPerfiles(GObject *buttonInit, GtkBuilder* builder){
@@ -302,11 +316,12 @@ void menuPerfiles(GObject *buttonInit, GtkBuilder* builder){
     if(GTK_IS_WINDOW(windowClose)){
       g_print("Se cierra: %s\n", gtk_window_get_title (GTK_WINDOW (windowClose)));
       gtk_widget_destroy(GTK_WIDGET(windowClose));
+      closeAutoWindow = 1;
     }
 
     GtkWidget *window;
     window = GTK_WIDGET(gtk_builder_get_object (builder, "ProfileBuild"));
-    // g_signal_connect (window, "destroy", G_CALLBACK (gtk_main_quit), NULL);
+    g_signal_connect (window, "destroy", G_CALLBACK (destroyWindow), NULL);
 
     /*   Obtencion de Objetos   */
     GObject *text, *event, *button;
@@ -573,63 +588,136 @@ void guardarPFP(GObject *playerImg){
   strcat(path, nameImg);
   strcat(path, ".png");
   strcpy(DB_Menu.jugadores[*apRegistrados].src, path);
+
+  GtkWidget *window = gtk_widget_get_toplevel(GTK_WIDGET(playerImg));
+  GList *children = gtk_container_get_children(GTK_CONTAINER(window));
+  GList *l;
+  for (l = children; l != NULL; l = l->next) {
+    if (GTK_IS_IMAGE(l->data)) {
+      if (GTK_WIDGET(l->data) != playerImg) {
+        gtk_widget_hide(GTK_WIDGET(l->data));
+      }
+    }
+  }
+  g_list_free(children);
 }
 
 /*   Funciones para el JUEGO   */
 void startGame(){
 
   srand(time(NULL));
-  int a, b, j=0, end=0;
+  int a, b, j=0, end=0,  c,i;
+  char tempString[MAX_PATH];
   GtkBuilder *builder;
   GObject *boxA, *boxAB, *boxI, *boxD, *event;
   GError *error = NULL;
   GtkWidget *window;
-  
+  char* srcSimple;
+
   //TODO: Ocupar las estructuras que ya estan en DB_Menu
-  cartas jugador1[7];
-  cartas jugador2[7];
+  cartas jugador1[7] = {0};
+  cartas jugador2[7] = {0};
+  cartas mazo={0};
+  for(i=0; i<7; i++){
+      end = 0;
+      a = rand() % 56;
+      strcpy(jugador1[i].srcCompleto, image_names[a]);
+      strcpy(tempString, image_names[a]);
+       srcSimple = strtok(tempString, "\\");
+      srcSimple = strtok(NULL, "\\");
+      srcSimple = strtok(NULL, "\\");
+      srcSimple = strtok(NULL, "\\");
+      strcpy(jugador1[i].srcSimple,srcSimple);
 
-for(int i=0; i<7; i++){
-  a=rand()%56;
-  b=rand()%56;
-    jugador1->src[i]=image_names[a];
-    jugador2->src[i]=image_names[b];
-
-    // while(jugador2->src[i][j]!='r' && band == 0){
-    //   if(jugador2->src[i][j]=='r')
-    //     band=1;
-    //   }
-    //   j++;
-    // }
-    // strcpy(jugador1->color, "Rojo");
-
-    while(end != 1){
-      switch(jugador1->src[i][j]) {
-        case 'r':
-          strcpy(jugador1->color, "Rojo");
+      while(end != 1){
+        switch(jugador1[i].srcSimple[j]) {
+          case 'r':
+           strcpy(jugador1[i].color, "Rojo");
+              end=1;
+            break;
+          case 'b':
+            strcpy(jugador1[i].color, "Azul");
             end=1;
-          break;
-        case 'b':
-          strcpy(jugador1->color, "Azul");
-          end=1;
-          break;
-        case 'y':
-          strcpy(jugador1->color, "Amarillo");
-          end=1;
-          break;
-        case 'g':
-          strcpy(jugador1->color, "Verde");
-          end=1;
-          break;
-        default:
-          if(jugador1->src[i][j] != "\0")
-            j++;
-          else
+            break;
+          case 'y':
+            strcpy(jugador1[i].color, "Amarillo");
             end=1;
-          break;
+            break;
+          case 'g':
+            strcpy(jugador1[i].color, "Verde");
+            end=1;
+            break;
+          case 'w':
+               strcpy(jugador1[i].color, "Comodin");
+            end=1;
+            break;
+          default:
+            if(jugador1[i].srcSimple[i] != '\0')
+              j++;
+            else
+              end=1;
+            break;  
+        }
       }
+      if(jugador1[i].color == NULL)
+        g_print("Error en el color\n");
+      else
+        g_print("Jugador 1 - Carta %d - %s\n",i, jugador1[i].color);
+// ---------------------------------------------------------------------------------------------------------------------
+      end = 0;
+      b = rand() % 56;
+      strcpy(jugador2[i].srcCompleto, image_names[b]);
+      strcpy(tempString, image_names[b]);
+      srcSimple = strtok(tempString, "\\");
+      srcSimple = strtok(NULL, "\\");
+      srcSimple = strtok(NULL, "\\");
+      srcSimple = strtok(NULL, "\\");
+      strcpy(jugador2[i].srcSimple,srcSimple);
+      while(end != 1){
+        switch(jugador2[i].srcSimple[j]) {
+          case 'r':
+            strcpy(jugador2[i].color, "Rojo");
+              end=1;
+            break;
+          case 'b':
+            strcpy(jugador2[i].color, "Azul");
+            end=1;
+            break;
+          case 'y':
+            strcpy(jugador2[i].color, "Amarillo");
+            end=1;
+            break;
+          case 'g':
+            strcpy(jugador2[i].color, "Verde");
+            end=1;
+            break;
+            case 'w':
+               strcpy(jugador2[i].color, "Comodin");
+            end=1;
+            break;
+          default:
+            if(jugador2[i].srcSimple[i] != '\0')
+              j++;
+            else
+              end=1;
+            break;
+        }
+      }
+      if(jugador2[i].color == NULL)
+        g_print("Error en el color\n");
+      else
+        g_print("Jugador 2 - Carta %d - %s\n",i, jugador2[i].color);
+/*
+      end=0;
+      c=rand()%56;
+      strcpy(mazo.srcSimple, image_names[c]);
+      strcpy(tempString, image_names[c]);
+*/
     }
-}
+      ///srcSimple
+
+      
+
 
   g_print("Inicio del juego\n");
   builder = gtk_builder_new ();
@@ -650,33 +738,51 @@ for(int i=0; i<7; i++){
   g_signal_connect(event, "button-release-event", G_CALLBACK(ocultar), imgGlobal);
   g_signal_connect (event, "enter_notify_event", G_CALLBACK (motionCard), imgGlobal);
   g_signal_connect (event, "leave_notify_event", G_CALLBACK (motionCard), imgGlobal);
+  gtk_image_set_from_file(GTK_IMAGE(imgGlobal), jugador1[0].srcCompleto);
 
   event = gtk_builder_get_object(builder, "Ab2");
   imgGlobal = gtk_builder_get_object(builder, "IAb2");
-  
+  g_signal_connect (event, "enter_notify_event", G_CALLBACK (motionCard), imgGlobal);
+  g_signal_connect (event, "leave_notify_event", G_CALLBACK (motionCard), imgGlobal);
   g_signal_connect(event, "button-release-event", G_CALLBACK(ocultar), imgGlobal);
+  gtk_image_set_from_file(GTK_IMAGE(imgGlobal), jugador1[1].srcCompleto);
 
 
   event = gtk_builder_get_object(builder, "Ab3");
   imgGlobal = gtk_builder_get_object(builder, "IAb3");
+  g_signal_connect (event, "enter_notify_event", G_CALLBACK (motionCard), imgGlobal);
+  g_signal_connect (event, "leave_notify_event", G_CALLBACK (motionCard), imgGlobal);
   g_signal_connect(event, "button-release-event", G_CALLBACK(ocultar), imgGlobal);
+  gtk_image_set_from_file(GTK_IMAGE(imgGlobal), jugador1[2].srcCompleto);
 
 
   event = gtk_builder_get_object(builder, "Ab4");
   imgGlobal = gtk_builder_get_object(builder, "IAb4");
+  g_signal_connect (event, "enter_notify_event", G_CALLBACK (motionCard), imgGlobal);
+  g_signal_connect (event, "leave_notify_event", G_CALLBACK (motionCard), imgGlobal);
   g_signal_connect(event, "button-release-event", G_CALLBACK(ocultar), imgGlobal);
+  gtk_image_set_from_file(GTK_IMAGE(imgGlobal), jugador1[3].srcCompleto);
 
   event = gtk_builder_get_object(builder, "Ab5");
   imgGlobal = gtk_builder_get_object(builder, "IAb5");
+  g_signal_connect (event, "enter_notify_event", G_CALLBACK (motionCard), imgGlobal);
+  g_signal_connect (event, "leave_notify_event", G_CALLBACK (motionCard), imgGlobal);
   g_signal_connect(event, "button-release-event", G_CALLBACK(ocultar), imgGlobal);
+  gtk_image_set_from_file(GTK_IMAGE(imgGlobal), jugador1[4].srcCompleto);
 
   event = gtk_builder_get_object(builder, "Ab6");
   imgGlobal = gtk_builder_get_object(builder, "IAb6");
+  g_signal_connect (event, "enter_notify_event", G_CALLBACK (motionCard), imgGlobal);
+  g_signal_connect (event, "leave_notify_event", G_CALLBACK (motionCard), imgGlobal);
   g_signal_connect(event, "button-release-event", G_CALLBACK(ocultar), imgGlobal);
+  gtk_image_set_from_file(GTK_IMAGE(imgGlobal), jugador1[5].srcCompleto);
 
   event = gtk_builder_get_object(builder, "Ab7");
   imgGlobal = gtk_builder_get_object(builder, "IAb7");
+  g_signal_connect (event, "enter_notify_event", G_CALLBACK (motionCard), imgGlobal);
+  g_signal_connect (event, "leave_notify_event", G_CALLBACK (motionCard), imgGlobal);
   g_signal_connect(event, "button-release-event", G_CALLBACK(ocultar), imgGlobal);
+  gtk_image_set_from_file(GTK_IMAGE(imgGlobal), jugador1[6].srcCompleto);
 
   gtk_widget_show_all(GTK_WIDGET(window));
 }
@@ -685,4 +791,5 @@ void ocultar(GObject *event){
   GtkWidget *tmp = gtk_bin_get_child (GTK_WIDGET(event));
   gtk_image_set_from_file(GTK_IMAGE(tmp), "assets\\MainCards\\CardInv.png");
   gtk_widget_set_sensitive(GTK_WIDGET(event), FALSE);
-}
+  cardSelected = 1;
+}//
