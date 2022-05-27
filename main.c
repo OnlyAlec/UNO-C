@@ -574,6 +574,7 @@ int restartMenuPerfiles (GObject *object){
         return 1;
   } else{
     menuPerfiles(object, builder);
+    *apRegistrados=+1;
   }
 }
 void guardarApodo(GObject *entryText){
@@ -714,10 +715,6 @@ void startGame(){
       strcpy(tempString, image_names[c]);
 */
     }
-      ///srcSimple
-
-      
-
 
   g_print("Inicio del juego\n");
   builder = gtk_builder_new ();
