@@ -129,6 +129,7 @@ void guardarApodo(GObject *, int);
 void guardarPFP(GObject *, int);
 // Juego Principal
 void startGame();
+void ocultar();
 
 int main (int argc, char *argv[]) {
   /*   init GTK && GTS   */
@@ -459,7 +460,7 @@ void menuSeleccionJugadores(GObject *buttonInit, GtkBuilder* builder){
   g_signal_connect (GTK_WIDGET(Eventimg), "button-release-event",  G_CALLBACK(numJugadores), builder);
   gtk_widget_set_name(GTK_WIDGET(Eventimg), "3P");
   Eventimg = gtk_builder_get_object (builder, "4P");
-  g_signal_connect (GTK_WIDGET(Eventimg), "button-release-event", G_CALLBACK(numJugadores), builder);
+  g_signal_connect (GTK_WIDGET(Eventimg), "button-release-event", G_CALLBACK(startGame), builder);
   gtk_widget_set_name(GTK_WIDGET(Eventimg), "4P");
 
   buttonBot = gtk_builder_get_object (builder, "Bot");
@@ -530,6 +531,58 @@ void guardarPFP(GObject *playerImg, int player){
 
 /*   Funciones para el JUEGO   */
 void startGame(){
+   GtkBuilder *builder;
+  GObject *boxA, *boxAB, *boxI, *boxD, *event,*event2,*event3,*event4,*event5,*event6,*event7, *img;
+  GError *error = NULL;
+  GtkWidget *window;
   g_print("Inicio del juego\n");
-  system("pause");
+ 
+   builder = gtk_builder_new ();
+  if (gtk_builder_add_from_file (builder, "XML/menuplay.glade", &error) == 0) {
+    g_printerr ("Error loading file: %s\n", error->message);
+    g_clear_error (&error);
+  }
+
+  windowMain = gtk_builder_get_object (builder, "playmenu");
+  // g_signal_connect (windowMain, "destroy", G_CALLBACK (gtk_main_quit), NULL);
+    /* Generales */
+  gtk_builder_connect_signals(builder, NULL);
+
+  boxA = gtk_builder_get_object(builder, "CartasArriba");
+  boxAB = gtk_builder_get_object(builder, "CartasAbajo");
+  boxI = gtk_builder_get_object(builder, "CartaDerecha");
+  boxD = gtk_builder_get_object(builder, "CartasIzquierda");
+
+  event = gtk_builder_get_object(builder, "CardI1");
+  g_signal_connect(event, "button-release-event", G_CALLBACK(ocultar), NULL);
+  g_signal_connect (event, "enter_notify_event", G_CALLBACK (motionCard), NULL);
+  g_signal_connect (event, "leave_notify_event", G_CALLBACK (motionCard), NULL);
+  
+  event = gtk_builder_get_object(builder, "CardI2");
+  g_signal_connect(event, "button-release-event", G_CALLBACK(ocultar), NULL);
+
+
+  event = gtk_builder_get_object(builder, "CardI3");
+  g_signal_connect(event, "button-release-event", G_CALLBACK(ocultar), NULL);
+  
+
+  event = gtk_builder_get_object(builder, "CardI4");
+  g_signal_connect(event, "button-release-event", G_CALLBACK(ocultar), NULL);
+
+  event = gtk_builder_get_object(builder, "CardI5");
+  g_signal_connect(event, "button-release-event", G_CALLBACK(ocultar), NULL);
+
+  event = gtk_builder_get_object(builder, "CardI6");
+  g_signal_connect(event, "button-release-event", G_CALLBACK(ocultar), NULL);
+
+  event = gtk_builder_get_object(builder, "CardI7");
+  g_signal_connect(event, "button-release-event", G_CALLBACK(ocultar), NULL);
+
+
+  gtk_widget_show_all(GTK_WIDGET(windowMain));
+}
+
+
+void ocultar(GObject*event){
+  gtk_widget_hide(GTK_WIDGET(event));
 }
