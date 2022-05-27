@@ -23,7 +23,7 @@
               <object class="GtkImage">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="pixbuf">..\assets\icons\verde.jpg</property>
+                <property name="pixbuf">..\assets\backgrounds\verde.jpg</property>
               </object>
             </child>
           </object>
@@ -47,7 +47,7 @@
                   <object class="GtkImage">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="pixbuf">..\assets\icons\rojo.jpg</property>
+                    <property name="pixbuf">..\assets\backgrounds\rojo.jpg</property>
                   </object>
                 </child>
               </object>
@@ -73,7 +73,7 @@
                   <object class="GtkImage">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="pixbuf">..\assets\icons\amarillo.jpg</property>
+                    <property name="pixbuf">..\assets\backgrounds\amarillo.jpg</property>
                   </object>
                 </child>
               </object>
@@ -99,7 +99,7 @@
                   <object class="GtkImage">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="pixbuf">..\assets\icons\azul.jpg</property>
+                    <property name="pixbuf">..\assets\backgrounds\azul.jpg</property>
                   </object>
                 </child>
               </object>
