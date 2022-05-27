@@ -261,6 +261,10 @@ static void activate(GtkApplication *app, gpointer user_data) {
   g_signal_connect (event, "enter_notify_event", G_CALLBACK (motionCard), NULL);
   g_signal_connect (event, "leave_notify_event", G_CALLBACK (motionCard), NULL);
 
+  /*   Testing   */
+  button = gtk_builder_get_object (builder, "Testing");
+  g_signal_connect (button, "clicked", G_CALLBACK (startGame), NULL);
+
   gst_element_set_state (play, GST_STATE_PLAYING);
   gtk_widget_show_all(GTK_WIDGET(windowMain));
   g_object_unref (builder);

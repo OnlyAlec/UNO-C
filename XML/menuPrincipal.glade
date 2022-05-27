@@ -83,9 +83,6 @@
         <property name="height-request">720</property>
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <child>
-          <placeholder/>
-        </child>
         <child type="overlay">
           <object class="GtkToggleButton" id="SFX-Btn1">
             <property name="width-request">60</property>
@@ -327,6 +324,19 @@
           <packing>
             <property name="index">8</property>
           </packing>
+        </child>
+        <child type="overlay">
+          <object class="GtkButton" id="Testing">
+            <property name="label" translatable="yes">Testing</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <property name="halign">start</property>
+            <property name="valign">start</property>
+            <property name="margin-start">150</property>
+            <property name="margin-top">200</property>
+            <property name="always-show-image">True</property>
+          </object>
         </child>
       </object>
     </child>
