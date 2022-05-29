@@ -110,7 +110,6 @@ static char *image_names[] = {
 /*Estructuras*/
 typedef struct{
   char apodo[20];
-  char ID[20];
   char src[MAX_PATH];
 } perfil;
 typedef struct{
@@ -118,6 +117,7 @@ typedef struct{
   int numero; // 0-9 : Numeors, 10-14 : Acciones
   char srcCompleto[MAX_PATH]; //Variable para identificar la direcccion de la carta en el arreglo
   char srcSimple[50]; //Variable para identificar la direcccion de la carta en el arreglo
+    //char ID[20];
 } cartas;
 typedef struct {
   int numJugadores;
@@ -125,27 +125,29 @@ typedef struct {
   char modJuego[20];
 } Menu;
 
+// Esta estructura es para solo un JUGADOR
 typedef struct{
-  cartas mazo[54];
-  perfil juga[4];
-}Juego;
+  cartas baraja[MAX_CARDS];
+    char ID;
+  int numCartasTotales;
+  perfil jugador; //FIXME: Enlazar esta estructura con la del menu
+} DatosJugador;
 
 /*   Globales   */
 GObject *windowMain, *eventBot, *eventHuman, *Global;
 static GstElement *playbin, *play, *sink;
 static int registrados = 0, *apRegistrados = &registrados, goGame = 0;
 Menu DB_Menu;
-Juego DB_Juego;
 
 // Global para que no se pierda el valor del builder. Cada vez que se desocupe le hacemos un "unref"
 GtkBuilder *builder;
 
 /*   Globales para el juego   */
 int cardSelected=0;
-cartas jugador1[MAX_CARDS] = {0};
-cartas jugador2[MAX_CARDS] = {0};
-cartas jugador3[MAX_CARDS] = {0};
-cartas jugador4[MAX_CARDS] = {0};
+DatosJugador jugador1 = {0};
+DatosJugador jugador2 = {0};
+DatosJugador jugador3 = {0};
+DatosJugador jugador4 = {0};
 cartas cardInit = {0};
 
 /*   Funciones   */
@@ -659,196 +661,196 @@ void startGame(GObject *buttonInit){
   for(int i=0; i<7; i++){
       end = 0;
       a = rand() % 54;
-      strcpy(jugador1[i].srcCompleto, image_names[a]);
+      strcpy(jugador1.baraja[i].srcCompleto, image_names[a]);
       strcpy(tempString, image_names[a]);
        srcSimple = strtok(tempString, "\\");
       srcSimple = strtok(NULL, "\\");
       srcSimple = strtok(NULL, "\\");
       srcSimple = strtok(NULL, "\\");
-      strcpy(jugador1[i].srcSimple,srcSimple);
+      strcpy(jugador1.baraja[i].srcSimple,srcSimple);
 
       while(end != 1){
-        switch(jugador1[i].srcSimple[j]) {
+        switch(jugador1.baraja[i].srcSimple[j]) {
           case 'r':
-           strcpy(jugador1[i].color, "Rojo");
+           strcpy(jugador1.baraja[i].color, "Rojo");
               end=1;
             break;
           case 'b':
-            strcpy(jugador1[i].color, "Azul");
+            strcpy(jugador1.baraja[i].color, "Azul");
             end=1;
             break;
           case 'y':
-            strcpy(jugador1[i].color, "Amarillo");
+            strcpy(jugador1.baraja[i].color, "Amarillo");
             end=1;
             break;
           case 'g':
-            strcpy(jugador1[i].color, "Verde");
+            strcpy(jugador1.baraja[i].color, "Verde");
             end=1;
             break;
           case 'f':
-            strcpy(jugador1[i].color, "ComodinMas4");
+            strcpy(jugador1.baraja[i].color, "ComodinMas4");
             end=1;
             break;
           case 'c':
-            strcpy(jugador1[i].color, "Comodin");
+            strcpy(jugador1.baraja[i].color, "Comodin");
             end=1;
           break;
           case 'p':/*Carta + 2*/
-            strcpy(jugador1[i].color, "ComodinMas2");
+            strcpy(jugador1.baraja[i].color, "ComodinMas2");
             end=1;
             break;
           default:
-            if(jugador1[i].srcSimple[i] != '\0')
+            if(jugador1.baraja[i].srcSimple[i] != '\0')
               j++;
             else
               end=1;
             break;
         }
                 /*Switch que valida el numero de las cartas y si es un +2, reversa, negar turno etc...*/
-        l=strlen(jugador1[i].srcSimple);//Obtiene la ultima letra de la cadena, sabiendo asi su numero o poder de la carta
-        switch (jugador1[i].srcSimple[l-5]){//Se resta menos cinco ya que se toma en cuenta el .png
+        l=strlen(jugador1.baraja[i].srcSimple);//Obtiene la ultima letra de la cadena, sabiendo asi su numero o poder de la carta
+        switch (jugador1.baraja[i].srcSimple[l-5]){//Se resta menos cinco ya que se toma en cuenta el .png
            case '0':
-             jugador1[i].numero=0;
+             jugador1.baraja[i].numero=0;
              break;
            case '1':
-             jugador1[i].numero=1;
+             jugador1.baraja[i].numero=1;
              break;
            case '2':
-             jugador1[i].numero=2;
+             jugador1.baraja[i].numero=2;
              break;
            case '3':
-             jugador1[i].numero=3;
+             jugador1.baraja[i].numero=3;
              break;
            case '4':
-             jugador1[i].numero=4;
+             jugador1.baraja[i].numero=4;
              break;
            case '5':
-             jugador1[i].numero=5;
+             jugador1.baraja[i].numero=5;
              break;
            case '6':
-             jugador1[i].numero=6;
+             jugador1.baraja[i].numero=6;
              break;
            case '7':
-             jugador1[i].numero=7;
+             jugador1.baraja[i].numero=7;
              break;
            case '8':
-             jugador1[i].numero=8;
+             jugador1.baraja[i].numero=8;
              break;
            case '9':
-             jugador1[i].numero=9;
+             jugador1.baraja[i].numero=9;
              break;
            case 'r':/*Carta + 2*/
-             jugador1[i].numero=10;
+             jugador1.baraja[i].numero=10;
              break;
            case 'w':/*Carta de +4*/
-             jugador1[i].numero=11;
+             jugador1.baraja[i].numero=11;
              break;
            case 'e':/*Carta de reversa*/
-             jugador1[i].numero=12;
+             jugador1.baraja[i].numero=12;
              break;
            case 'p':/*Carta para negar turno*/
-             jugador1[i].numero=13;
+             jugador1.baraja[i].numero=13;
              break;
            }
       }
-      if(jugador1[i].color == NULL)
+      if(jugador1.baraja[i].color == NULL)
         g_print("Error en el color\n");
       else
-        g_print("Jugador 1 - Carta %d - %s - %d\n",i, jugador1[i].color, jugador1[i].numero);
+        g_print("Jugador 1 - Carta %d - %s - %d\n",i, jugador1.baraja[i].color, jugador1.baraja[i].numero);
 // ---------------------------------------------------------------------------------------------------------------------
       end = 0;
       b = rand() % 54;
-      strcpy(jugador2[i].srcCompleto, image_names[b]);
+      strcpy(jugador2.baraja[i].srcCompleto, image_names[b]);
       strcpy(tempString, image_names[b]);
       srcSimple = strtok(tempString, "\\");
       srcSimple = strtok(NULL, "\\");
       srcSimple = strtok(NULL, "\\");
       srcSimple = strtok(NULL, "\\");
-      strcpy(jugador2[i].srcSimple,srcSimple);
+      strcpy(jugador2.baraja[i].srcSimple,srcSimple);
       while(end != 1){
-        switch(jugador2[i].srcSimple[j]) {
+        switch(jugador2.baraja[i].srcSimple[j]) {
           case 'r':
-            strcpy(jugador2[i].color, "Rojo");
+            strcpy(jugador2.baraja[i].color, "Rojo");
               end=1;
             break;
           case 'b':
-            strcpy(jugador2[i].color, "Azul");
+            strcpy(jugador2.baraja[i].color, "Azul");
             end=1;
             break;
           case 'y':
-            strcpy(jugador2[i].color, "Amarillo");
+            strcpy(jugador2.baraja[i].color, "Amarillo");
             end=1;
             break;
           case 'g':
-            strcpy(jugador2[i].color, "Verde");
+            strcpy(jugador2.baraja[i].color, "Verde");
             end=1;
             break;
           case 'f':
-            strcpy(jugador2[i].color, "ComodinMas4");
+            strcpy(jugador2.baraja[i].color, "ComodinMas4");
             end=1;
             break;
           case 'c':
-            strcpy(jugador2[i].color, "Comodin");
+            strcpy(jugador2.baraja[i].color, "Comodin");
             end=1;
           break;
           default:
-            if(jugador2[i].srcSimple[i] != '\0')
+            if(jugador2.baraja[i].srcSimple[i] != '\0')
               j++;
             else
               end=1;
             break;
         }
                 /*Switch que valida el numero de las cartas y si es un +2, reversa, negar turno etc...*/
-        l=strlen(jugador2[i].srcSimple);//Obtiene la ultima letra de la cadena, sabiendo asi su numero o poder de la carta
-        switch (jugador2[i].srcSimple[l-5]){
+        l=strlen(jugador2.baraja[i].srcSimple);//Obtiene la ultima letra de la cadena, sabiendo asi su numero o poder de la carta
+        switch (jugador2.baraja[i].srcSimple[l-5]){
            case '0':
-             jugador2[i].numero=0;
+             jugador2.baraja[i].numero=0;
              break;
            case '1':
-             jugador2[i].numero=1;
+             jugador2.baraja[i].numero=1;
              break;
            case '2':
-             jugador2[i].numero=2;
+             jugador2.baraja[i].numero=2;
              break;
            case '3':
-             jugador2[i].numero=3;
+             jugador2.baraja[i].numero=3;
              break;
            case '4':
-             jugador2[i].numero=4;
+             jugador2.baraja[i].numero=4;
              break;
            case '5':
-             jugador2[i].numero=5;
+             jugador2.baraja[i].numero=5;
              break;
            case '6':
-             jugador2[i].numero=6;
+             jugador2.baraja[i].numero=6;
              break;
            case '7':
-             jugador2[i].numero=7;
+             jugador2.baraja[i].numero=7;
              break;
            case '8':
-             jugador2[i].numero=8;
+             jugador2.baraja[i].numero=8;
              break;
            case '9':
-             jugador2[i].numero=9;
+             jugador2.baraja[i].numero=9;
              break;
            case 'r':/*Carta + 2*/
-             jugador2[i].numero=10;
+             jugador2.baraja[i].numero=10;
              break;
-            case 'w':/*Carta de +4*/
-             jugador2[i].numero=11;
+            case 'f':/*Carta de +4*/
+             jugador2.baraja[i].numero=11;
              break;
            case 'e':/*Carta de reversa*/
-             jugador2[i].numero=12;
+             jugador2.baraja[i].numero=12;
              break;
            case 'p':/*Carta para negar turno*/
-             jugador2[i].numero=13;
+             jugador2.baraja[i].numero=13;
              break;
            }
       }
-      if(jugador2[i].color == NULL)
+      if(jugador1.baraja[i].color == NULL)
         g_print("Error en el color\n");
       else
-        g_print("Jugador 2 - Carta %d - %s - %d\n",i, jugador2[i].color, jugador2[i].numero);
+        g_print("Jugador 2 - Carta %d - %s - %d\n",i, jugador1.baraja[i].color, jugador2.baraja[i].numero);
     }
       end=0;
       c = rand()%54;
@@ -927,7 +929,7 @@ void startGame(GObject *buttonInit){
            case 'r':/*Carta + 2*/
              cardInit.numero=10;
              break;
-            case 'w':/*Carta de +4*/
+            case 'f':/*Carta de +4*/
              cardInit.numero=11;
              break;
            case 'e':/*Carta de reversa*/
@@ -962,14 +964,14 @@ void startGame(GObject *buttonInit){
   g_signal_connect(event, "button-release-event", G_CALLBACK(ocultarValidar), img);
   g_signal_connect (event, "enter_notify_event", G_CALLBACK (motionCard), img);
   g_signal_connect (event, "leave_notify_event", G_CALLBACK (motionCard), img);
-  gtk_image_set_from_file(GTK_IMAGE(img), jugador1[0].srcCompleto);
+  gtk_image_set_from_file(GTK_IMAGE(img), jugador1.baraja[0].srcCompleto);
 
   event = gtk_builder_get_object(builder, "Ab2");
   img = gtk_builder_get_object(builder, "IAb2");
   g_signal_connect (event, "enter_notify_event", G_CALLBACK (motionCard), img);
   g_signal_connect (event, "leave_notify_event", G_CALLBACK (motionCard), img);
   g_signal_connect(event, "button-release-event", G_CALLBACK(ocultarValidar), img);
-  gtk_image_set_from_file(GTK_IMAGE(img), jugador1[1].srcCompleto);
+  gtk_image_set_from_file(GTK_IMAGE(img), jugador1.baraja[1].srcCompleto);
 
 
   event = gtk_builder_get_object(builder, "Ab3");
@@ -977,7 +979,7 @@ void startGame(GObject *buttonInit){
   g_signal_connect (event, "enter_notify_event", G_CALLBACK (motionCard), img);
   g_signal_connect (event, "leave_notify_event", G_CALLBACK (motionCard), img);
   g_signal_connect(event, "button-release-event", G_CALLBACK(ocultarValidar), img);
-  gtk_image_set_from_file(GTK_IMAGE(img), jugador1[2].srcCompleto);
+  gtk_image_set_from_file(GTK_IMAGE(img), jugador1.baraja[2].srcCompleto);
 
 
   event = gtk_builder_get_object(builder, "Ab4");
@@ -985,28 +987,28 @@ void startGame(GObject *buttonInit){
   g_signal_connect (event, "enter_notify_event", G_CALLBACK (motionCard), img);
   g_signal_connect (event, "leave_notify_event", G_CALLBACK (motionCard), img);
   g_signal_connect(event, "button-release-event", G_CALLBACK(ocultarValidar), img);
-  gtk_image_set_from_file(GTK_IMAGE(img), jugador1[3].srcCompleto);
+  gtk_image_set_from_file(GTK_IMAGE(img), jugador1.baraja[3].srcCompleto);
 
   event = gtk_builder_get_object(builder, "Ab5");
   img = gtk_builder_get_object(builder, "IAb5");
   g_signal_connect (event, "enter_notify_event", G_CALLBACK (motionCard), img);
   g_signal_connect (event, "leave_notify_event", G_CALLBACK (motionCard), img);
   g_signal_connect(event, "button-release-event", G_CALLBACK(ocultarValidar), img);
-  gtk_image_set_from_file(GTK_IMAGE(img), jugador1[4].srcCompleto);
+  gtk_image_set_from_file(GTK_IMAGE(img), jugador1.baraja[4].srcCompleto);
 
   event = gtk_builder_get_object(builder, "Ab6");
   img = gtk_builder_get_object(builder, "IAb6");
   g_signal_connect (event, "enter_notify_event", G_CALLBACK (motionCard), img);
   g_signal_connect (event, "leave_notify_event", G_CALLBACK (motionCard), img);
   g_signal_connect(event, "button-release-event", G_CALLBACK(ocultarValidar), img);
-  gtk_image_set_from_file(GTK_IMAGE(img), jugador1[5].srcCompleto);
+  gtk_image_set_from_file(GTK_IMAGE(img), jugador1.baraja[5].srcCompleto);
 
   event = gtk_builder_get_object(builder, "Ab7");
   img = gtk_builder_get_object(builder, "IAb7");
   g_signal_connect (event, "enter_notify_event", G_CALLBACK (motionCard), img);
   g_signal_connect (event, "leave_notify_event", G_CALLBACK (motionCard), img);
   g_signal_connect(event, "button-release-event", G_CALLBACK(ocultarValidar), img);
-  gtk_image_set_from_file(GTK_IMAGE(img), jugador1[6].srcCompleto);
+  gtk_image_set_from_file(GTK_IMAGE(img), jugador1.baraja[6].srcCompleto);
 
   img = gtk_builder_get_object(builder, "IJuego");
   gtk_image_set_from_file(GTK_IMAGE(img), cardInit.srcCompleto);
@@ -1043,7 +1045,11 @@ void comparacion_num_color() {
   // NUMERO de carta INICIAL - CARTAINIT(cartas) -> Numero
   // Comparamos CON LA DEL USUARIO
   //jugador 1
-  if(strcmp(jugador1->color,cardInit.color)==0 || jugador1->numero==cardInit.numero)
+
+  // DE ACUERDO A LA SELECCION DEL USUARIO
+  // ID = CARTA 1
+  // jugador1.baraja[ID].color
+  if(strcmp(jugador1.baraja[ID].color,cardInit.color)==0 || jugador1.baraja[ID].numero==cardInit.numero)
   {
      printf("\nTiro de carta");
   }
@@ -1052,10 +1058,10 @@ void comparacion_num_color() {
     do
     {
        printf("\nCOME DEL MAZO");
-    } while (jugador1->numero==cardInit.numero || strcmp(jugador1->color,cardInit.color)==0);
+    } while (jugador1.baraja[ID].numero==cardInit.numero || strcmp(jugador1.baraja[ID].color,cardInit.color)==0);
   }
   //Jugador 2
-  if(strcmp(jugador2->color,cardInit.color)==0 || jugador2->numero==cardInit.numero)
+  if(strcmp(jugador2.baraja[ID].color,cardInit.color)==0 || jugador2.baraja[ID].numero==cardInit.numero)
   {
      printf("\nTiro de carta");
   }
@@ -1064,10 +1070,10 @@ void comparacion_num_color() {
     do
     {
        printf("\nCOME DEL MAZO");
-    } while (jugador2->numero==cardInit.numero || strcmp(jugador2->color,cardInit.color)==0);
+    } while (jugador2.baraja[ID].numero==cardInit.numero || strcmp(jugador2.baraja[ID].color,cardInit.color)==0);
   }
    //Jugador 3
-   if(strcmp(jugador3->color,cardInit.color)==0 || jugador3->numero==cardInit.numero)
+   if(strcmp(jugador3.baraja[ID].color,cardInit.color)==0 || jugador3.baraja[ID].numero==cardInit.numero)
   {
      printf("\nTiro de carta");
   }
@@ -1076,10 +1082,10 @@ void comparacion_num_color() {
     do
     {
        printf("\nCOME DEL MAZO");
-    } while (jugador3->numero==cardInit.numero || strcmp(jugador3->color,cardInit.color)==0);
+    } while (jugador3.baraja[ID].numero==cardInit.numero || strcmp(jugador3.baraja[ID].color,cardInit.color)==0);
   }
   //Jugador 4
-  if(strcmp(jugador4->color,cardInit.color)==0 || jugador4->numero==cardInit.numero)
+  if(strcmp(jugador4.baraja[ID].color,cardInit.color)==0 || jugador4.baraja[ID].numero==cardInit.numero)
   {
      printf("\nTiro de carta");
   }
@@ -1088,8 +1094,38 @@ void comparacion_num_color() {
     do
     {
        printf("\nCOME DEL MAZO");
-    } while (jugador4->numero==cardInit.numero || strcmp(jugador4->color,cardInit.color)==0);
+    } while (jugador4.baraja[ID].numero==cardInit.numero || strcmp(jugador4.baraja[ID].color,cardInit.color)==0);
   }
+}
+
+void cartas_usuario()
+{
+    
+   int i=0;
+    while (jugador1.baraja[i].color[0]!='\0')
+    {
+          i++;
+    }
+    jugador1.numCartasTotales = i;
+   while (jugador2.baraja[i].color[0]!='\0')
+    {
+          i++;
+    }
+    jugador2.numCartasTotales = i;
+  while (jugador3.baraja[i].color[0]!='\0')
+    {
+          i++;
+    }
+    jugador3.numCartasTotales = i;
+    while (jugador4.baraja[i].color[0]!='\0')
+    {
+          i++;
+    }
+    jugador4.numCartasTotales = i;
+}
+void finjuego()
+{
+   //if(strcmp(jugador1.baraja)==0)
 }
 
 /*
