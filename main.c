@@ -852,7 +852,6 @@ void ocultarValidar(GObject *event){
   //     valid = 1;
   //   }
 
-
   //   if (valid == 1){
       gtk_image_set_from_file(GTK_IMAGE(card), "assets\\MainCards\\CardInv.png");
       gtk_widget_set_sensitive(GTK_WIDGET(event), FALSE);
