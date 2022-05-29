@@ -81,8 +81,8 @@ static char *image_names[] = {
   "assets\\MainCards\\small\\yellow_picker.png",
   "assets\\MainCards\\small\\yellow_reverse.png",
   "assets\\MainCards\\small\\yellow_skip.png",
-  "assets\\MainCards\\small\\wild_color_changer.png",
-  "assets\\MainCards\\small\\wild_pick_four.png",
+  "assets\\MainCards\\small\\changer_wild_color.png",
+  "assets\\MainCards\\small\\four_wild_pick.png",
 };
 /*Estructuras*/
 typedef struct{
@@ -626,7 +626,7 @@ void startGame(GObject *buttonInit){
     gtk_widget_destroy(GTK_WIDGET(windowClose));
   }
 
-  int a,b,c,j=0,end=0;
+  int a,b,c,j=0,end=0,l=0;
   char tempString[MAX_PATH];
   GtkBuilder *builder;
   GObject *boxA, *boxAB, *boxI, *boxD, *event, *img;
@@ -654,7 +654,7 @@ void startGame(GObject *buttonInit){
           case 'b':
             strcpy(jugador1[i].color, "Azul");
             end=1;
-            break;
+            break; 
           case 'y':
             strcpy(jugador1[i].color, "Amarillo");
             end=1;
@@ -663,10 +663,14 @@ void startGame(GObject *buttonInit){
             strcpy(jugador1[i].color, "Verde");
             end=1;
             break;
-          case 'w':
-               strcpy(jugador1[i].color, "Comodin");
+          case 'f':
+            strcpy(jugador1[i].color, "ComodinMas4");
             end=1;
             break;
+          case 'c':
+            strcpy(jugador1[i].color, "Comodin");
+            end=1;
+          break;
           default:
             if(jugador1[i].srcSimple[i] != '\0')
               j++;
@@ -674,11 +678,54 @@ void startGame(GObject *buttonInit){
               end=1;
             break;
         }
+        /*Switch que valida el numero de las cartas y si es un +2, reversa, negar turno etc...*/ 
+        l=strlen(jugador1[i].srcSimple);//Obtiene la ultima letra de la cadena, sabiendo asi su numero o poder de la carta   
+        switch (jugador1[i].srcSimple[l-5]){//Se resta menos cinco ya que se toma en cuenta el .png 
+           case '0':
+             jugador1[i].numero=0;
+             break;
+           case '1':
+             jugador1[i].numero=1;
+             break;
+           case '2':
+             jugador1[i].numero=2;
+             break;
+           case '3':
+             jugador1[i].numero=3;
+             break;
+           case '4':
+             jugador1[i].numero=4;
+             break;
+           case '5':
+             jugador1[i].numero=5;
+             break;
+           case '6':
+             jugador1[i].numero=6;
+             break;
+           case '7':
+             jugador1[i].numero=7;
+             break;
+           case '8':
+             jugador1[i].numero=8;
+             break;
+           case '9':
+             jugador1[i].numero=9;
+             break;
+           case 'r':/*Carta + 2*/
+             jugador1[i].numero=10;
+             break;
+           case 'e':/*Carta de reversa*/
+             jugador1[i].numero=11;
+             break;
+           case 'p':/*Carta para negar turno*/
+             jugador1[i].numero=12;
+             break;
+           }
       }
       if(jugador1[i].color == NULL)
         g_print("Error en el color\n");
       else
-        g_print("Jugador 1 - Carta %d - %s\n",i, jugador1[i].color);
+        g_print("Jugador 1 - Carta %d - %s - %d\n",i, jugador1[i].color, jugador1[i].numero);
 // ---------------------------------------------------------------------------------------------------------------------
       end = 0;
       b = rand() % 54;
@@ -707,10 +754,14 @@ void startGame(GObject *buttonInit){
             strcpy(jugador2[i].color, "Verde");
             end=1;
             break;
-            case 'w':
-               strcpy(jugador2[i].color, "Comodin");
+          case 'f':
+            strcpy(jugador2[i].color, "ComodinMas4");
             end=1;
             break;
+          case 'c':
+            strcpy(jugador2[i].color, "Comodin");
+            end=1;
+          break;
           default:
             if(jugador2[i].srcSimple[i] != '\0')
               j++;
@@ -718,11 +769,54 @@ void startGame(GObject *buttonInit){
               end=1;
             break;
         }
+        /*Switch que valida el numero de las cartas y si es un +2, reversa, negar turno etc...*/ 
+        l=strlen(jugador2[i].srcSimple);//Obtiene la ultima letra de la cadena, sabiendo asi su numero o poder de la carta   
+        switch (jugador2[i].srcSimple[l-5]){
+           case '0':
+             jugador2[i].numero=0;
+             break;
+           case '1':
+             jugador2[i].numero=1;
+             break;
+           case '2':
+             jugador2[i].numero=2;
+             break;
+           case '3':
+             jugador2[i].numero=3;
+             break;
+           case '4':
+             jugador2[i].numero=4;
+             break;
+           case '5':
+             jugador2[i].numero=5;
+             break;
+           case '6':
+             jugador2[i].numero=6;
+             break;
+           case '7':
+             jugador2[i].numero=7;
+             break;
+           case '8':
+             jugador2[i].numero=8;
+             break;
+           case '9':
+             jugador2[i].numero=9;
+             break;
+           case 'r':/*Carta + 2*/
+             jugador2[i].numero=10;
+             break;
+           case 'e':/*Carta de reversa*/
+             jugador2[i].numero=11;
+             break;
+           case 'p':/*Carta para negar turno*/
+             jugador2[i].numero=12;
+             break;
+           }
       }
       if(jugador2[i].color == NULL)
         g_print("Error en el color\n");
       else
-        g_print("Jugador 2 - Carta %d - %s\n",i, jugador2[i].color);
+        g_print("Jugador 2 - Carta %d - %s - %d\n",i, jugador2[i].color, jugador2[i].numero);
     }
       end=0;
       c = rand()%54;
@@ -751,10 +845,14 @@ void startGame(GObject *buttonInit){
             strcpy(cardInit.color, "Verde");
             end=1;
             break;
-          case 'w':
-            strcpy(cardInit.color, "Comodin");
+          case 'f':
+            strcpy(cardInit.color, "ComodinMas4");
             end=1;
             break;
+          case 'c':
+            strcpy(cardInit.color, "Comodin");
+            end=1;
+          break;
           default:
             if(cardInit.srcSimple != '\0')
               j++;
@@ -844,14 +942,12 @@ void startGame(GObject *buttonInit){
 void ocultarValidar(GObject *event){
   int valid=0;
   GtkWidget *card = gtk_bin_get_child (GTK_WIDGET(event));
-
   // if(cardSelected == 0){
   //   //FIXME: Validar la carta antes de desaparecer
   //   //FIXME: Hacer que la funcion sea un callback
   //   if (cardInit.color == card.color){
   //     valid = 1;
   //   }
-
   //   if (valid == 1){
       gtk_image_set_from_file(GTK_IMAGE(card), "assets\\MainCards\\CardInv.png");
       gtk_widget_set_sensitive(GTK_WIDGET(event), FALSE);
