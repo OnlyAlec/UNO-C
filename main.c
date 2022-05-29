@@ -16,7 +16,29 @@
   * - Las variables "eventHuman, eventBot" no se deben declarar como globales, deberian ser locales.
   *   Sin embargo, como en la funcion donde se ocupa el show(), pierde la direccion de builder tambien
   *   se pierden las direcciones de estos bototenes.
-  * - En algunas funciones se pierde la direccion de builder.
+  * FIXME: - En algunas funciones se pierde la direccion de builder.
+  * - Agregar musica
+  * - Agregar efectos de sonido
+  * - Hacer la ventand de Acerca de Nosotros
+  * - Hacer ventana de modificacion de perfil
+  *   ->  Agregar una funcion que permita que el usuario pueda cambiar el nombre del jugador
+  *   ->  Agregar una funcion que permita que el usuario pueda cambiar el avatar
+  * - Integrasion del css para botones y animaciones
+  * - Hacer la ventana de configuracion
+  *  ->  Configuracion de la diificultad
+  *  ->  Configuracion de la pantalla
+  *  ->  Configuracion de los colores (Accesibilidad)
+*/
+
+/*   URGENTE:
+  * - Terminar la parte logica, creear las comparaciones de las cartas
+  *   -> Como guardamos estos datos, como sabes que mazo tiene el usuario?
+  *   -> Como comprobamos cuantas cartas tiene el usuarios?
+  *   -> Como sabemos que es un +2,+4, bloqueo, etc?
+  *   -> Como sabemos el color de la carta?
+  *   -> Como sabemos el numero de la carta?
+  *   -> Que datos necesitamos para que termine el juego y no se quede en un loop infinito?
+  * - Necesitamos hacer la parte logica de los bots, ser automaticos
 */
 
 #include <time.h>
@@ -28,6 +50,7 @@
 #include <gdk/gdkwin32.h>
 
 #define MAX_CARDS 30
+
 static char *image_names[] = {
   "assets\\MainCards\\small\\blue_0.png",
   "assets\\MainCards\\small\\blue_1.png",
@@ -114,6 +137,9 @@ static int registrados = 0, *apRegistrados = &registrados, goGame = 0;
 Menu DB_Menu;
 Juego DB_Juego;
 
+// Global para que no se pierda el valor del builder. Cada vez que se desocupe le hacemos un "unref"
+GtkBuilder *builder;
+
 /*   Globales para el juego   */
 int cardSelected=0;
 cartas jugador1[MAX_CARDS] = {0};
@@ -133,15 +159,15 @@ void motionCard(GObject *, GdkEventConfigure *, gpointer );
 void returnMain(GObject*, gpointer*);
 // static void destroyWindow(GtkWidget *, GdkEventConfigure *, gpointer *);
 // Menus
-void menuPerfiles(GObject *, GtkBuilder* );
+void menuPerfiles(GObject *);
 void menuLocalOnline(GObject *, gpointer);
 void menuComoJugar(GObject *, gpointer);
-void menuInstrucciones(GObject*, GtkBuilder* );
-void menuObjetivo(GObject*, GtkBuilder* );
-void menuSeleccionJugadores(GObject *, GtkBuilder* );
+void menuInstrucciones(GObject*);
+void menuObjetivo(GObject*);
+void menuSeleccionJugadores(GObject *);
 //PreJuego
 void numJugadores(GObject * );
-void modoJuego(GObject *, GtkBuilder*);
+void modoJuego(GObject *);
 int restartMenuPerfiles (GObject *);
 void guardarApodo(GObject *);
 void guardarPFP(GObject *);
@@ -220,7 +246,6 @@ char* fullPath( char * partialPath ) {
 
 /*  Funciones de animacion o GTK   */
 static void activate(GtkApplication *app, gpointer user_data) {
-  GtkBuilder *builder;
   GObject *button, *box, *event, *overlayArea, *img;
   GError *error = NULL;
   GtkWidget *video_drawing_area = gtk_drawing_area_new();
@@ -301,6 +326,7 @@ void returnMain(GObject *init, gpointer* user_data){
     g_print("Se cierra: %s\n", gtk_window_get_title (GTK_WINDOW (windowClose)));
     gtk_widget_destroy(GTK_WIDGET(windowClose));
   }
+  g_object_unref (builder);
   main(0,NULL);
 }
 // static void destroyWindow(GtkWidget *window, GdkEventConfigure *eventConfigure, gpointer *data){
@@ -311,7 +337,39 @@ void returnMain(GObject *init, gpointer* user_data){
 // }
 
 /*  Funciones de Menus  */
-void menuPerfiles(GObject *buttonInit, GtkBuilder* builder){
+// Menus Pre-Juego
+void menuLocalOnline(GObject *buttonInit, gpointer user_data){
+  g_print("Menu Local o Multijugador\n");
+  /*   Cierre de ventana   */
+  GtkWindow *windowClose;
+  windowClose = GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(buttonInit)));
+  if(GTK_IS_WINDOW(windowClose)){
+    g_print("Se cierra: %s\n", gtk_window_get_title (GTK_WINDOW (windowClose)));
+    gtk_widget_destroy(GTK_WIDGET(windowClose));
+  }
+  /*   Integracion del XML   */
+  GError *error = NULL;
+  builder = gtk_builder_new ();
+  if (gtk_builder_add_from_file (builder, "XML/PreJuego.glade", &error) == 0) {
+    g_printerr ("Error loading file: %s\n", error->message);
+    g_clear_error (&error);
+    system("pause");
+  }
+  /*   Obtencion de Objetos   */
+  GtkWidget *window;
+  GObject *button;
+  /*   Ventanas   */
+  window = GTK_WIDGET(gtk_builder_get_object (builder, "SelectMode"));
+  // g_signal_connect (window, "destroy", G_CALLBACK (gtk_main_quit), NULL);
+  /*   Botones   */
+  button = gtk_builder_get_object (builder, "GameLocal");
+  g_signal_connect (button, "clicked", G_CALLBACK (menuSeleccionJugadores), builder);
+  button = gtk_builder_get_object (builder, "GameMult");
+  // g_signal_connect (button, "clicked", G_CALLBACK (menuMult), builder);
+
+  gtk_widget_show_all(GTK_WIDGET(window));
+}
+void menuPerfiles(GObject *buttonInit){
     g_print("Menu Perfiles\n");
     /*   Cierre de ventana   */
     GtkWindow *windowClose;
@@ -376,119 +434,7 @@ void menuPerfiles(GObject *buttonInit, GtkBuilder* builder){
 
     gtk_widget_show_all(GTK_WIDGET(window)) ;
 }
-void menuLocalOnline(GObject *buttonInit, gpointer user_data){
-  g_print("Menu Local o Multijugador\n");
-  /*   Cierre de ventana   */
-  GtkWindow *windowClose;
-  windowClose = GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(buttonInit)));
-  if(GTK_IS_WINDOW(windowClose)){
-    g_print("Se cierra: %s\n", gtk_window_get_title (GTK_WINDOW (windowClose)));
-    gtk_widget_destroy(GTK_WIDGET(windowClose));
-  }
-  /*   Integracion del XML   */
-  GtkBuilder *builder;
-  GError *error = NULL;
-  builder = gtk_builder_new ();
-  if (gtk_builder_add_from_file (builder, "XML/PreJuego.glade", &error) == 0) {
-    g_printerr ("Error loading file: %s\n", error->message);
-    g_clear_error (&error);
-    system("pause");
-  }
-  /*   Obtencion de Objetos   */
-  GtkWidget *window;
-  GObject *button;
-  /*   Ventanas   */
-  window = GTK_WIDGET(gtk_builder_get_object (builder, "SelectMode"));
-  // g_signal_connect (window, "destroy", G_CALLBACK (gtk_main_quit), NULL);
-  /*   Botones   */
-  button = gtk_builder_get_object (builder, "GameLocal");
-  g_signal_connect (button, "clicked", G_CALLBACK (menuSeleccionJugadores), builder);
-  button = gtk_builder_get_object (builder, "GameMult");
-  // g_signal_connect (button, "clicked", G_CALLBACK (menuMult), builder);
-
-  gtk_widget_show_all(GTK_WIDGET(window));
-}
-void menuComoJugar(GObject *buttonInit, gpointer user_data) {
-  g_print("Menu Como Juagar (Instrucciones o Objetivo)\n");
-  /*   Cierre de ventana   */
-  GtkWindow *windowClose;
-  windowClose = GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(buttonInit)));
-  if(GTK_IS_WINDOW(windowClose)){
-    g_print("Se cierra: %s\n", gtk_window_get_title (GTK_WINDOW (windowClose)));
-    gtk_widget_destroy(GTK_WIDGET(windowClose));
-  }
-  /*   Integracion del XML   */
-  GtkBuilder *builder;
-  GError *error = NULL;
-  builder = gtk_builder_new ();
-  if (gtk_builder_add_from_file (builder, "XML/comoJugar.glade", &error) == 0) {
-    g_printerr ("Error loading file: %s\n", error->message);
-    g_clear_error (&error);
-    system("pause");
-  }
-  /*   Activacion Video   */
-  activateVideo("assets\\backgrounds\\VideoInstrucciones.mp4");
-  /*   Obtencion de Objetos   */
-  GtkWidget *window;
-  GObject *button, *overlayArea;
-  GtkWidget *video_drawing_area = gtk_drawing_area_new();
-
-  /*   Ventanas   */
-  window = GTK_WIDGET(gtk_builder_get_object (builder, "ComoJugarW"));
-  // g_signal_connect (window, "destroy", G_CALLBACK (gtk_main_quit), NULL);
-    /*   Video Area   */
-  overlayArea = gtk_builder_get_object (builder, "Overlay");
-  g_object_get (sink, "widget", &video_drawing_area, NULL);
-  gtk_widget_set_size_request(video_drawing_area, 1280, 720);
-  gtk_container_add(GTK_CONTAINER(overlayArea), video_drawing_area);
-  /*   Botones   */
-  button = gtk_builder_get_object (builder, "ObjetivoBtn");
-  g_signal_connect (button, "clicked", G_CALLBACK (menuObjetivo), builder);
-  button = gtk_builder_get_object (builder, "InstruccionesBtn");
-  g_signal_connect (button, "clicked", G_CALLBACK (menuInstrucciones), builder);
-
-  gst_element_set_state (play, GST_STATE_PLAYING);
-  gtk_widget_show_all(GTK_WIDGET(window));
-}
-void menuInstrucciones(GObject *buttonInit, GtkBuilder* builder){
-  g_print("Menu Instrucciones\n");
-  /*   Cierre de ventana   */
-  GtkWindow *windowClose;
-  GObject *window, *button;
-  windowClose = GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(buttonInit)));
-  if(GTK_IS_WINDOW(windowClose)){
-    g_print("Se cierra: %s\n", gtk_window_get_title (GTK_WINDOW (windowClose)));
-    gtk_widget_destroy(GTK_WIDGET(windowClose));
-  }
-  /*   Nuevo menu   */
-  g_print("Menu instrucciones\n");
-  window = gtk_builder_get_object (builder, "menuInstrucciones");
-  button = gtk_builder_get_object (builder, "back-btn2");
-  g_signal_connect (button, "clicked", G_CALLBACK (returnMain), NULL);
-
-  gtk_widget_show_all(GTK_WIDGET(window));
-  // g_object_unref(builder);
-}
-void menuObjetivo(GObject *buttonInit, GtkBuilder* builder) {
-  g_print("Menu Objetivos\n");
-  GObject *window, *button;
-
-  /*   Cierre de ventana   */
-  GtkWindow *windowClose;
-  windowClose = GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(buttonInit)));
-  if(GTK_IS_WINDOW(windowClose)){
-    g_print("Se cierra: %s\n", gtk_window_get_title (GTK_WINDOW (windowClose)));
-    gtk_widget_destroy(GTK_WIDGET(windowClose));
-  }
-
-  window = gtk_builder_get_object (builder, "menuObjetivo");
-  button = gtk_builder_get_object (builder, "back-btn");
-  g_signal_connect (button, "clicked", G_CALLBACK (returnMain), NULL);
-
-  gtk_widget_show_all(GTK_WIDGET(window));
-  // g_object_unref(builder);
-}
-void menuSeleccionJugadores(GObject *buttonInit, GtkBuilder* builder){
+void menuSeleccionJugadores(GObject *buttonInit){
   // FIXME: Enviar 2 widgets con una struct para poder enviar los datos
   g_print("Menu Cuantos Jugadores\n");
     /*   Cierre de ventana   */
@@ -528,7 +474,6 @@ void menuSeleccionJugadores(GObject *buttonInit, GtkBuilder* builder){
   gtk_widget_show_all(GTK_WIDGET(window));
   gtk_widget_hide(GTK_WIDGET(eventBot));
   gtk_widget_hide(GTK_WIDGET(eventHuman));
-  g_object_unref(builder);
 }
 
 /*   Funciones para el PRE-JUEGO   */
@@ -549,7 +494,7 @@ void numJugadores(GObject *buttonInit){
   gtk_widget_show(GTK_WIDGET(eventBot));
   g_object_unref(builder);
 }
-void modoJuego(GObject *vsImg, GtkBuilder* builder){
+void modoJuego(GObject *vsImg){
   const gchar* data = gtk_widget_get_name(GTK_WIDGET(vsImg));
   g_print("VS = %s!\n", data);
   if (strcmp(data, "Bot") == 0)
@@ -560,21 +505,19 @@ void modoJuego(GObject *vsImg, GtkBuilder* builder){
   restartMenuPerfiles(vsImg);
 }
 int restartMenuPerfiles (GObject *object){
-  // Cuando builder llega a esta funcion la dirrecion se pierde, entonces la redefino
-  GtkBuilder *builder = gtk_builder_new ();
-  gtk_builder_add_from_file (builder, "XML/PreJuego.glade", NULL);
 
   if (GTK_IS_BUTTON(object)) {
       if (*apRegistrados < DB_Menu.numJugadores) {
-        menuPerfiles(object, builder);
+        menuPerfiles(object);
         *apRegistrados+=1;
       } else
         goGame = 1;
   } else{
-    menuPerfiles(object, builder);
+    menuPerfiles(object);
     *apRegistrados+=1;
   }
   if (goGame == 1) {
+    // Limpia el constructor de las ventanas anteriores
     g_object_unref(builder);
     startGame(Global);
   }
@@ -616,6 +559,85 @@ void guardarPFP(GObject *playerImg){
   g_list_free(children);
 }
 
+// Menus de Como JUgar
+void menuComoJugar(GObject *buttonInit, gpointer user_data) {
+  g_print("Menu Como Juagar (Instrucciones o Objetivo)\n");
+  /*   Cierre de ventana   */
+  GtkWindow *windowClose;
+  windowClose = GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(buttonInit)));
+  if(GTK_IS_WINDOW(windowClose)){
+    g_print("Se cierra: %s\n", gtk_window_get_title (GTK_WINDOW (windowClose)));
+    gtk_widget_destroy(GTK_WIDGET(windowClose));
+  }
+  /*   Integracion del XML   */
+  GError *error = NULL;
+  builder = gtk_builder_new ();
+  if (gtk_builder_add_from_file (builder, "XML/comoJugar.glade", &error) == 0) {
+    g_printerr ("Error loading file: %s\n", error->message);
+    g_clear_error (&error);
+    system("pause");
+  }
+  /*   Activacion Video   */
+  activateVideo("assets\\backgrounds\\VideoInstrucciones.mp4");
+  /*   Obtencion de Objetos   */
+  GtkWidget *window;
+  GObject *button, *overlayArea;
+  GtkWidget *video_drawing_area = gtk_drawing_area_new();
+
+  /*   Ventanas   */
+  window = GTK_WIDGET(gtk_builder_get_object (builder, "ComoJugarW"));
+  // g_signal_connect (window, "destroy", G_CALLBACK (gtk_main_quit), NULL);
+    /*   Video Area   */
+  overlayArea = gtk_builder_get_object (builder, "Overlay");
+  g_object_get (sink, "widget", &video_drawing_area, NULL);
+  gtk_widget_set_size_request(video_drawing_area, 1280, 720);
+  gtk_container_add(GTK_CONTAINER(overlayArea), video_drawing_area);
+  /*   Botones   */
+  button = gtk_builder_get_object (builder, "ObjetivoBtn");
+  g_signal_connect (button, "clicked", G_CALLBACK (menuObjetivo), builder);
+  button = gtk_builder_get_object (builder, "InstruccionesBtn");
+  g_signal_connect (button, "clicked", G_CALLBACK (menuInstrucciones), builder);
+
+  gst_element_set_state (play, GST_STATE_PLAYING);
+  gtk_widget_show_all(GTK_WIDGET(window));
+}
+void menuInstrucciones(GObject *buttonInit){
+  g_print("Menu Instrucciones\n");
+  /*   Cierre de ventana   */
+  GtkWindow *windowClose;
+  GObject *window, *button;
+  windowClose = GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(buttonInit)));
+  if(GTK_IS_WINDOW(windowClose)){
+    g_print("Se cierra: %s\n", gtk_window_get_title (GTK_WINDOW (windowClose)));
+    gtk_widget_destroy(GTK_WIDGET(windowClose));
+  }
+  /*   Nuevo menu   */
+  g_print("Menu instrucciones\n");
+  window = gtk_builder_get_object (builder, "menuInstrucciones");
+  button = gtk_builder_get_object (builder, "back-btn2");
+  g_signal_connect (button, "clicked", G_CALLBACK (returnMain), NULL);
+
+  gtk_widget_show_all(GTK_WIDGET(window));
+}
+void menuObjetivo(GObject *buttonInit) {
+  g_print("Menu Objetivos\n");
+  GObject *window, *button;
+
+  /*   Cierre de ventana   */
+  GtkWindow *windowClose;
+  windowClose = GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(buttonInit)));
+  if(GTK_IS_WINDOW(windowClose)){
+    g_print("Se cierra: %s\n", gtk_window_get_title (GTK_WINDOW (windowClose)));
+    gtk_widget_destroy(GTK_WIDGET(windowClose));
+  }
+
+  window = gtk_builder_get_object (builder, "menuObjetivo");
+  button = gtk_builder_get_object (builder, "back-btn");
+  g_signal_connect (button, "clicked", G_CALLBACK (returnMain), NULL);
+
+  gtk_widget_show_all(GTK_WIDGET(window));
+}
+
 /*   Funciones para el JUEGO   */
 void startGame(GObject *buttonInit){
     /*   Cierre de ventana   */
@@ -654,7 +676,7 @@ void startGame(GObject *buttonInit){
           case 'b':
             strcpy(jugador1[i].color, "Azul");
             end=1;
-            break; 
+            break;
           case 'y':
             strcpy(jugador1[i].color, "Amarillo");
             end=1;
@@ -671,6 +693,10 @@ void startGame(GObject *buttonInit){
             strcpy(jugador1[i].color, "Comodin");
             end=1;
           break;
+          case 'p':/*Carta + 2*/
+            strcpy(jugador1[i].color, "ComodinMas2");
+            end=1;
+            break;
           default:
             if(jugador1[i].srcSimple[i] != '\0')
               j++;
@@ -678,9 +704,9 @@ void startGame(GObject *buttonInit){
               end=1;
             break;
         }
-        /*Switch que valida el numero de las cartas y si es un +2, reversa, negar turno etc...*/ 
-        l=strlen(jugador1[i].srcSimple);//Obtiene la ultima letra de la cadena, sabiendo asi su numero o poder de la carta   
-        switch (jugador1[i].srcSimple[l-5]){//Se resta menos cinco ya que se toma en cuenta el .png 
+                /*Switch que valida el numero de las cartas y si es un +2, reversa, negar turno etc...*/
+        l=strlen(jugador1[i].srcSimple);//Obtiene la ultima letra de la cadena, sabiendo asi su numero o poder de la carta
+        switch (jugador1[i].srcSimple[l-5]){//Se resta menos cinco ya que se toma en cuenta el .png
            case '0':
              jugador1[i].numero=0;
              break;
@@ -714,11 +740,14 @@ void startGame(GObject *buttonInit){
            case 'r':/*Carta + 2*/
              jugador1[i].numero=10;
              break;
-           case 'e':/*Carta de reversa*/
+           case 'w':/*Carta de +4*/
              jugador1[i].numero=11;
              break;
-           case 'p':/*Carta para negar turno*/
+           case 'e':/*Carta de reversa*/
              jugador1[i].numero=12;
+             break;
+           case 'p':/*Carta para negar turno*/
+             jugador1[i].numero=13;
              break;
            }
       }
@@ -769,8 +798,8 @@ void startGame(GObject *buttonInit){
               end=1;
             break;
         }
-        /*Switch que valida el numero de las cartas y si es un +2, reversa, negar turno etc...*/ 
-        l=strlen(jugador2[i].srcSimple);//Obtiene la ultima letra de la cadena, sabiendo asi su numero o poder de la carta   
+                /*Switch que valida el numero de las cartas y si es un +2, reversa, negar turno etc...*/
+        l=strlen(jugador2[i].srcSimple);//Obtiene la ultima letra de la cadena, sabiendo asi su numero o poder de la carta
         switch (jugador2[i].srcSimple[l-5]){
            case '0':
              jugador2[i].numero=0;
@@ -805,11 +834,14 @@ void startGame(GObject *buttonInit){
            case 'r':/*Carta + 2*/
              jugador2[i].numero=10;
              break;
-           case 'e':/*Carta de reversa*/
+            case 'w':/*Carta de +4*/
              jugador2[i].numero=11;
              break;
-           case 'p':/*Carta para negar turno*/
+           case 'e':/*Carta de reversa*/
              jugador2[i].numero=12;
+             break;
+           case 'p':/*Carta para negar turno*/
+             jugador2[i].numero=13;
              break;
            }
       }
@@ -860,8 +892,7 @@ void startGame(GObject *buttonInit){
               end=1;
             break;
         }
-        
-        l=strlen(cardInit.srcSimple);//Obtiene la ultima letra de la cadena, sabiendo asi su numero o poder de la carta   
+        l=strlen(cardInit.srcSimple);//Obtiene la ultima letra de la cadena, sabiendo asi su numero o poder de la carta
         switch (cardInit.srcSimple[l-5]){
            case '0':
              cardInit.numero=0;
@@ -896,14 +927,16 @@ void startGame(GObject *buttonInit){
            case 'r':/*Carta + 2*/
              cardInit.numero=10;
              break;
-           case 'e':/*Carta de reversa*/
+            case 'w':/*Carta de +4*/
              cardInit.numero=11;
              break;
-           case 'p':/*Carta para negar turno*/
+           case 'e':/*Carta de reversa*/
              cardInit.numero=12;
              break;
+           case 'p':/*Carta para negar turno*/
+             cardInit.numero=13;
+             break;
            }
-        
       }
       if(cardInit.color == NULL)
         g_print("Error en el color\n");
@@ -982,16 +1015,17 @@ void startGame(GObject *buttonInit){
 
   gtk_widget_show_all(GTK_WIDGET(window));
 }
-
 void ocultarValidar(GObject *event){
   int valid=0;
   GtkWidget *card = gtk_bin_get_child (GTK_WIDGET(event));
+
   // if(cardSelected == 0){
   //   //FIXME: Validar la carta antes de desaparecer
   //   //FIXME: Hacer que la funcion sea un callback
   //   if (cardInit.color == card.color){
   //     valid = 1;
   //   }
+
   //   if (valid == 1){
       gtk_image_set_from_file(GTK_IMAGE(card), "assets\\MainCards\\CardInv.png");
       gtk_widget_set_sensitive(GTK_WIDGET(event), FALSE);
@@ -999,3 +1033,102 @@ void ocultarValidar(GObject *event){
     // }
   // }
 }
+void comparacion_num_color() {
+  // Sea el jugador que sea,cuando le haga click a la carta ANTES de desaparecerla
+  // Comprobamos el numero
+  // Que datos ocupamos?
+  // NUMERO de carta del usuario - JUGADOR(cartas) -> Numero
+  //  Obtener que carta de su baraja es?
+  //  Comparamos
+  // NUMERO de carta INICIAL - CARTAINIT(cartas) -> Numero
+  // Comparamos CON LA DEL USUARIO
+  //jugador 1
+  if(strcmp(jugador1->color,cardInit.color)==0 || jugador1->numero==cardInit.numero)
+  {
+     printf("\nTiro de carta");
+  }
+  else
+  {
+    do
+    {
+       printf("\nCOME DEL MAZO");
+    } while (jugador1->numero==cardInit.numero || strcmp(jugador1->color,cardInit.color)==0);
+  }
+  //Jugador 2
+  if(strcmp(jugador2->color,cardInit.color)==0 || jugador2->numero==cardInit.numero)
+  {
+     printf("\nTiro de carta");
+  }
+  else
+  {
+    do
+    {
+       printf("\nCOME DEL MAZO");
+    } while (jugador2->numero==cardInit.numero || strcmp(jugador2->color,cardInit.color)==0);
+  }
+   //Jugador 3
+   if(strcmp(jugador3->color,cardInit.color)==0 || jugador3->numero==cardInit.numero)
+  {
+     printf("\nTiro de carta");
+  }
+  else
+  {
+    do
+    {
+       printf("\nCOME DEL MAZO");
+    } while (jugador3->numero==cardInit.numero || strcmp(jugador3->color,cardInit.color)==0);
+  }
+  //Jugador 4
+  if(strcmp(jugador4->color,cardInit.color)==0 || jugador4->numero==cardInit.numero)
+  {
+     printf("\nTiro de carta");
+  }
+  else
+  {
+    do
+    {
+       printf("\nCOME DEL MAZO");
+    } while (jugador4->numero==cardInit.numero || strcmp(jugador4->color,cardInit.color)==0);
+  }
+}
+
+/*
+void comparacion_num(GObject *event)
+{
+  int num1=0, num2=0;
+  printf("\tComparacion de numeros en cartas: \n");
+               printf("\nIngrese dos numeros de cartas:");
+                scanf("%d  %d",&num1,&num2);
+                if(num1==num2)
+                {
+                printf("los numeros de la carta de mazo con la de enmedio son iguales \n");
+                printf("CARTA CON VALOR DE %d LA CARTA TIRADA TIENE VALOR DE %d son iguales,sigue el juego \n",num1,num2);
+                }
+                else
+                {
+                printf("Los numeros no son iguales,tire otra carta con diferente numero\n");
+                }
+}
+void comparacion_colores(GObject* event)
+{
+  char color1[15],color2[15];
+  cartas mazo,jugador;
+  printf("\t \tCOLORES DE CARTAS VERDE,AZUL,AMARILLO Y ROJO \n");
+            printf("CODIGO DE COLOR: ROJO: #ec6464,Verde: #64bb8e,Azul: #2dbbde,Amarillo: #f7e359 \n");
+            printf("ingrese codigo de color: \n");
+            fflush(stdin);
+            gets(mazo.color);
+            printf("Ingrese nuevamente el codigo: \n");
+            fflush(stdin);
+            gets(jugador.color);
+            if(strcmp(jugador.color,mazo.color)==0)
+            {
+
+                printf("Los colores son iguales, puede seguir \n");
+            }
+            else
+            {
+                printf("Los colores no son iguales por lo que debe intentar con otro \n");
+
+            }
+}*/
