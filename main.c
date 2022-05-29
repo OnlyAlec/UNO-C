@@ -81,7 +81,7 @@ static char *image_names[] = {
   "assets\\MainCards\\small\\yellow_picker.png",
   "assets\\MainCards\\small\\yellow_reverse.png",
   "assets\\MainCards\\small\\yellow_skip.png",
-  "assets\\MainCards\\small\\changer_wild_color.png",
+  "assets\\MainCards\\small\\changer_wild_colors.png",
   "assets\\MainCards\\small\\four_wild_pick.png",
 };
 /*Estructuras*/
@@ -860,11 +860,55 @@ void startGame(GObject *buttonInit){
               end=1;
             break;
         }
+        
+        l=strlen(cardInit.srcSimple);//Obtiene la ultima letra de la cadena, sabiendo asi su numero o poder de la carta   
+        switch (cardInit.srcSimple[l-5]){
+           case '0':
+             cardInit.numero=0;
+             break;
+           case '1':
+             cardInit.numero=1;
+             break;
+           case '2':
+             cardInit.numero=2;
+             break;
+           case '3':
+             cardInit.numero=3;
+             break;
+           case '4':
+             cardInit.numero=4;
+             break;
+           case '5':
+             cardInit.numero=5;
+             break;
+           case '6':
+             cardInit.numero=6;
+             break;
+           case '7':
+             cardInit.numero=7;
+             break;
+           case '8':
+             cardInit.numero=8;
+             break;
+           case '9':
+             cardInit.numero=9;
+             break;
+           case 'r':/*Carta + 2*/
+             cardInit.numero=10;
+             break;
+           case 'e':/*Carta de reversa*/
+             cardInit.numero=11;
+             break;
+           case 'p':/*Carta para negar turno*/
+             cardInit.numero=12;
+             break;
+           }
+        
       }
       if(cardInit.color == NULL)
         g_print("Error en el color\n");
       else
-        g_print("Carta Inicial - %s\n",cardInit.color);
+        g_print("Carta Inicial - %s - %d\n",cardInit.color, cardInit.numero);
 
   g_print("\t> Inicio del juego\n");
   builder = gtk_builder_new ();
