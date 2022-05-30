@@ -16,7 +16,6 @@
   * - Las variables "eventHuman, eventBot" no se deben declarar como globales, deberian ser locales.
   *   Sin embargo, como en la funcion donde se ocupa el show(), pierde la direccion de builder tambien
   *   se pierden las direcciones de estos bototenes.
-  * FIXME: - En algunas funciones se pierde la direccion de builder.
   * - Agregar musica
   * - Agregar efectos de sonido
   * - Hacer la ventand de Acerca de Nosotros
@@ -39,8 +38,6 @@
   *   -> Como sabemos el numero de la carta?
   *   -> Que datos necesitamos para que termine el juego y no se quede en un loop infinito?
   * - Necesitamos hacer la parte logica de los bots, ser automaticos
-  * - Hacer dinamica la repaticion de cartas (Switch's)
-  *   -> Por medio de concatenacion de strings
 */
 
 #include <time.h>
@@ -119,14 +116,12 @@ typedef struct{
   int numero; // 0-9 : Numeors, 10-14 : Acciones
   char srcCompleto[MAX_PATH]; //Variable para identificar la direcccion de la carta en el arreglo
   char srcSimple[50]; //Variable para identificar la direcccion de la carta en el arreglo
-    //char ID[20];
 } cartas;
 typedef struct {
   int numJugadores;
   perfil jugadores[4];
   char modJuego[20];
 } Menu;
-
 // Esta estructura es para solo un JUGADOR
 typedef struct{
   cartas baraja[MAX_CARDS];
@@ -135,7 +130,7 @@ typedef struct{
 } DatosJugador;
 
 /*   Globales   */
-GObject *windowMain, *eventBot, *eventHuman, *Global;
+GObject *windowMain, *Global;
 static GstElement *playbin, *play, *sink;
 static int registrados = 0, *apRegistrados = &registrados, goGame = 0;
 Menu DB_Menu;
@@ -166,7 +161,7 @@ void menuInstrucciones(GObject*);
 void menuObjetivo(GObject*);
 void menuSeleccionJugadores(GObject *);
 //PreJuego
-void numJugadores(GObject * );
+void numJugadores(GObject *, GList *);
 void modoJuego(GObject *);
 int restartMenuPerfiles (GObject *);
 void guardarApodo(GObject *);
@@ -436,6 +431,7 @@ void menuPerfiles(GObject *buttonInit){
 }
 void menuSeleccionJugadores(GObject *buttonInit){
   // FIXME: Enviar 2 widgets con una struct para poder enviar los datos
+  // TODO: Te quedaste en implementar una GLIST
   g_print("Menu Cuantos Jugadores\n");
     /*   Cierre de ventana   */
   GtkWindow *windowClose;
@@ -445,31 +441,35 @@ void menuSeleccionJugadores(GObject *buttonInit){
     gtk_widget_destroy(GTK_WIDGET(windowClose));
   }
   /*   Obtencion de Objetos   */
-  GObject *Eventimg;
+  GObject *Eventimg,*eventBot, *eventHuman;
   GtkWidget *window;
+  GList *events;
 
   window = GTK_WIDGET(gtk_builder_get_object (builder, "SelectPlayer"));
   // g_signal_connect (window, "destroy", G_CALLBACK (gtk_main_quit), NULL);
 
   Eventimg = gtk_builder_get_object (builder, "1P");
   gtk_widget_set_name(GTK_WIDGET(Eventimg), "1P");
-  g_signal_connect (GTK_WIDGET(Eventimg), "button-release-event", G_CALLBACK(numJugadores), eventBot);
+  g_signal_connect (GTK_WIDGET(Eventimg), "button-release-event", G_CALLBACK(numJugadores), events);
   Eventimg = gtk_builder_get_object (builder, "2P");
   gtk_widget_set_name(GTK_WIDGET(Eventimg), "2P");
-  g_signal_connect (GTK_WIDGET(Eventimg), "button-release-event", G_CALLBACK(numJugadores), window);
+  g_signal_connect (GTK_WIDGET(Eventimg), "button-release-event", G_CALLBACK(numJugadores), events);
   Eventimg = gtk_builder_get_object (builder, "3P");
   gtk_widget_set_name(GTK_WIDGET(Eventimg), "3P");
-  g_signal_connect (GTK_WIDGET(Eventimg), "button-release-event",  G_CALLBACK(numJugadores), window);
+  g_signal_connect (GTK_WIDGET(Eventimg), "button-release-event",  G_CALLBACK(numJugadores), events);
   Eventimg = gtk_builder_get_object (builder, "4P");
   gtk_widget_set_name(GTK_WIDGET(Eventimg), "4P");
-  g_signal_connect (GTK_WIDGET(Eventimg), "button-release-event", G_CALLBACK(numJugadores), window);
+  g_signal_connect (GTK_WIDGET(Eventimg), "button-release-event", G_CALLBACK(numJugadores), events);
 
   eventBot = gtk_builder_get_object (builder, "Bot");
-  gtk_widget_set_name(GTK_WIDGET(eventBot), "Bot");
-  g_signal_connect (eventBot, "button-release-event", G_CALLBACK(modoJuego), window);
   eventHuman = gtk_builder_get_object (builder, "Human");
+  g_list_insert(events, eventBot, 0);
+  g_list_insert(events, eventHuman, 1);
+
+  gtk_widget_set_name(GTK_WIDGET(eventBot), "Bot");
+  g_signal_connect (eventBot, "button-release-event", G_CALLBACK(modoJuego), events);
   gtk_widget_set_name(GTK_WIDGET(eventHuman), "Human");
-  g_signal_connect (eventHuman, "button-release-event", G_CALLBACK(modoJuego), window);
+  g_signal_connect (eventHuman, "button-release-event", G_CALLBACK(modoJuego), events);
 
   gtk_widget_show_all(GTK_WIDGET(window));
   gtk_widget_hide(GTK_WIDGET(eventBot));
@@ -477,12 +477,9 @@ void menuSeleccionJugadores(GObject *buttonInit){
 }
 
 /*   Funciones para el PRE-JUEGO   */
-void numJugadores(GObject *buttonInit){
-  // Cuando builder llega a esta funcion la dirrecion se pierde, entonces la redefino
-  GtkBuilder *builder = gtk_builder_new ();
-  gtk_builder_add_from_file (builder, "XML/PreJuego.glade", NULL);
+void numJugadores(GObject *buttonInit, GList *events){
 
-  GObject *eventImg, *box, *img;
+  GObject *eventImg, *box, *img,*eventHuman, *eventBot;
   const gchar* data = gtk_widget_get_name(GTK_WIDGET(buttonInit));
   DB_Menu.numJugadores = atoi(&data[0]);
   g_print("Numero de Jugadores = %d!\n", DB_Menu.numJugadores);
@@ -639,7 +636,6 @@ void menuObjetivo(GObject *buttonInit) {
 }
 
 /*   Funciones para el JUEGO   */
-
 // UNICAMENTE LOGICO
 void startGame(){
   int endGame;
@@ -790,7 +786,7 @@ void repartirCartasInicio(){
     }
     jugadoresRepartidos++;
   }
-  
+
 // CARTA INICIAL ------------------------------------------------------------------------------------------
     randNum = rand() % 54;
     end=0, lengSRC=0; j=0;
