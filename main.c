@@ -1008,17 +1008,18 @@ GtkWidget* interfazJuego(GtkWidget *widget){
    * - El objeto (EventBox)
    * - Que estatus mandar, en todo caso es el 2
   */
+  gpointer status = GINT_TO_POINTER(2);
 
   event = gtk_builder_get_object(builder, "Ab1");
   img = gtk_builder_get_object(builder, "IAb1");
-  g_signal_connect(event, "button-release-event", G_CALLBACK(startGame), GINT_TO_POINTER(2));
+  g_signal_connect(event, "button-release-event", G_CALLBACK(startGame), status);
   g_signal_connect (event, "enter_notify_event", G_CALLBACK (motionCard), img);
   g_signal_connect (event, "leave_notify_event", G_CALLBACK (motionCard), img);
   gtk_image_set_from_file(GTK_IMAGE(img), jugador[0].baraja[0].srcCompleto);
 
   event = gtk_builder_get_object(builder, "Ab2");
   img = gtk_builder_get_object(builder, "IAb2");
-  g_signal_connect(event, "button-release-event", G_CALLBACK(startGame), GINT_TO_POINTER(2));
+  g_signal_connect(event, "button-release-event", G_CALLBACK(startGame), status);
   g_signal_connect (event, "enter_notify_event", G_CALLBACK (motionCard), img);
   g_signal_connect (event, "leave_notify_event", G_CALLBACK (motionCard), img);
   gtk_image_set_from_file(GTK_IMAGE(img), jugador[0].baraja[1].srcCompleto);
@@ -1026,7 +1027,7 @@ GtkWidget* interfazJuego(GtkWidget *widget){
 
   event = gtk_builder_get_object(builder, "Ab3");
   img = gtk_builder_get_object(builder, "IAb3");
-  g_signal_connect(event, "button-release-event", G_CALLBACK(startGame), GINT_TO_POINTER(2));
+  g_signal_connect(event, "button-release-event", G_CALLBACK(startGame), status);
   g_signal_connect (event, "enter_notify_event", G_CALLBACK (motionCard), img);
   g_signal_connect (event, "leave_notify_event", G_CALLBACK (motionCard), img);
   gtk_image_set_from_file(GTK_IMAGE(img), jugador[0].baraja[2].srcCompleto);
@@ -1034,28 +1035,28 @@ GtkWidget* interfazJuego(GtkWidget *widget){
 
   event = gtk_builder_get_object(builder, "Ab4");
   img = gtk_builder_get_object(builder, "IAb4");
-  g_signal_connect(event, "button-release-event", G_CALLBACK(startGame), GINT_TO_POINTER(2));
+  g_signal_connect(event, "button-release-event", G_CALLBACK(startGame), status);
   g_signal_connect (event, "enter_notify_event", G_CALLBACK (motionCard), img);
   g_signal_connect (event, "leave_notify_event", G_CALLBACK (motionCard), img);
   gtk_image_set_from_file(GTK_IMAGE(img), jugador[0].baraja[3].srcCompleto);
 
   event = gtk_builder_get_object(builder, "Ab5");
   img = gtk_builder_get_object(builder, "IAb5");
-  g_signal_connect(event, "button-release-event", G_CALLBACK(startGame), GINT_TO_POINTER(2));
+  g_signal_connect(event, "button-release-event", G_CALLBACK(startGame), status);
   g_signal_connect (event, "enter_notify_event", G_CALLBACK (motionCard), img);
   g_signal_connect (event, "leave_notify_event", G_CALLBACK (motionCard), img);
   gtk_image_set_from_file(GTK_IMAGE(img), jugador[0].baraja[4].srcCompleto);
 
   event = gtk_builder_get_object(builder, "Ab6");
   img = gtk_builder_get_object(builder, "IAb6");
-  g_signal_connect(event, "button-release-event", G_CALLBACK(startGame), GINT_TO_POINTER(2));
+  g_signal_connect(event, "button-release-event", G_CALLBACK(startGame), status);
   g_signal_connect (event, "enter_notify_event", G_CALLBACK (motionCard), img);
   g_signal_connect (event, "leave_notify_event", G_CALLBACK (motionCard), img);
   gtk_image_set_from_file(GTK_IMAGE(img), jugador[0].baraja[5].srcCompleto);
 
   event = gtk_builder_get_object(builder, "Ab7");
   img = gtk_builder_get_object(builder, "IAb7");
-  g_signal_connect(event, "button-release-event", G_CALLBACK(startGame), GINT_TO_POINTER(2));
+  g_signal_connect(event, "button-release-event", G_CALLBACK(startGame), status);
   g_signal_connect (event, "enter_notify_event", G_CALLBACK (motionCard), img);
   g_signal_connect (event, "leave_notify_event", G_CALLBACK (motionCard), img);
   gtk_image_set_from_file(GTK_IMAGE(img), jugador[0].baraja[6].srcCompleto);
