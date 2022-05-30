@@ -27,6 +27,7 @@
   *  ->  Configuracion de la diificultad
   *  ->  Configuracion de la pantalla
   *  ->  Configuracion de los colores (Accesibilidad)
+  * - Si el usuario ya selecciono el NUMERO DE JUGADORES, bajar la opacidad y desactivarlo img
 */
 
 /*   URGENTE:
@@ -40,6 +41,7 @@
   * - Necesitamos hacer la parte logica de los bots, ser automaticos
 */
 
+//#include <glib.h>
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -130,18 +132,22 @@ typedef struct{
 } DatosJugador;
 
 /*   Globales   */
-GObject *windowMain, *Global;
+GObject *windowMain;
 static GstElement *playbin, *play, *sink;
 static int registrados = 0, *apRegistrados = &registrados, goGame = 0;
 Menu DB_Menu;
 
 // Global para que no se pierda el valor del builder. Cada vez que se desocupe le hacemos un "unref"
 GtkBuilder *builder;
+// Situacion similar con el builder
+GList *events = {0};
 
 /*   Globales para el juego   */
 int cardSelected=0;
 DatosJugador jugador[4] = {0};
 cartas cardInit = {0};
+
+
 
 /*   Funciones   */
 // GTS
@@ -161,16 +167,26 @@ void menuInstrucciones(GObject*);
 void menuObjetivo(GObject*);
 void menuSeleccionJugadores(GObject *);
 //PreJuego
-void numJugadores(GObject *, GList *);
+void numJugadores(GObject *);
 void modoJuego(GObject *);
-int restartMenuPerfiles (GObject *);
+void restartMenuPerfiles (GObject *);
 void guardarApodo(GObject *);
 void guardarPFP(GObject *);
 // Juego Principal
-void startGame();
+void startGame(GtkWidget *, gpointer *);
+void repartirCartasInicio();
+int comparacion_num_color(GtkWidget*, gpointer);
 void ocultarValidar(GObject *);
+void colocarCarta(); //TODO:
+void desabilitarCarta(); //TODO:
+int totalCartasUsuario(int);
+void finjuego();
+  //Interfaz Juego Principal
+GtkWidget* interfazJuego();
 
 int main (int argc, char *argv[]) {
+  srand(time(NULL));
+
   g_print("( ▀ v ▀ ) CORRIENDO!\n");
   /*   init GTK && GTS   */
   gtk_init (&argc, &argv);
@@ -299,16 +315,15 @@ static void activate(GtkApplication *app, gpointer user_data) {
   g_object_unref (builder);
   g_print("Menu Principal (^_^) \n");
 }
-void motionCard(GObject *eventBox, GdkEventConfigure *event, gpointer data){
+void motionCard(GObject *eventBox, GdkEventConfigure *eventMotion, gpointer data){
   // Move "eventBox" upper when the event is GDK_ENTER_NOTIFY, if not move it down
 
   int time = 60; // Tiempo en milisegundos
-  GdkEventType eventType = event->type;
-  if(event->type == GDK_ENTER_NOTIFY){
+  if(eventMotion->type == GDK_ENTER_NOTIFY){
     for (int i = 0; i < 5000; i++) {
       gtk_widget_set_margin_bottom(GTK_WIDGET(eventBox), i/time);
     }
-  } else if (event->type == GDK_LEAVE_NOTIFY){
+  } else if (eventMotion->type == GDK_LEAVE_NOTIFY){
     for (int i = 5000; i > 1; i--) {
       gtk_widget_set_margin_bottom(GTK_WIDGET(eventBox), i/time);
     }
@@ -365,73 +380,71 @@ void menuLocalOnline(GObject *buttonInit, gpointer user_data){
   gtk_widget_show_all(GTK_WIDGET(window));
 }
 void menuPerfiles(GObject *buttonInit){
-    g_print("Menu Perfiles\n");
     /*   Cierre de ventana   */
-    GtkWindow *windowClose;
+    GtkWindow *windowClose={0};
     windowClose = GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(buttonInit)));
+    g_print("\t=> %s", gtk_widget_get_name(GTK_WIDGET(windowClose)));
     if(GTK_IS_WINDOW(windowClose)){
-      g_print("Se cierra: %s\n", gtk_window_get_title (GTK_WINDOW (windowClose)));
+      g_print("\nSe cierra: %s\n", gtk_window_get_title (GTK_WINDOW (windowClose)));
       gtk_widget_destroy(GTK_WIDGET(windowClose));
     }
 
-    GtkWidget *window;
-    window = GTK_WIDGET(gtk_builder_get_object (builder, "ProfileBuild"));
+    g_print("\nMenu Perfiles\n");
+    GObject *window;
+    window = gtk_builder_get_object (builder, "ProfileBuild");
     // g_signal_connect (window, "destroy", G_CALLBACK (destroyWindow), NULL);
 
     /*   Obtencion de Objetos   */
-    GObject *text, *event, *button;
-    text = gtk_builder_get_object (builder, "NamePlayer");
-    g_signal_connect (text, "focus_out_event", G_CALLBACK(guardarApodo), NULL);
+    GObject *text=NULL, *event=NULL, *button=NULL;
+    // text = gtk_builder_get_object (builder, "NamePlayer");
+    // g_signal_connect (text, "focus_out_event", G_CALLBACK(guardarApodo), NULL);
 
-    event = gtk_builder_get_object (builder, "AvatarM1");
-    gtk_widget_set_name(GTK_WIDGET(event), "avatarW1");
+    // event = gtk_builder_get_object (builder, "AvatarM1");
+    // gtk_widget_set_name(GTK_WIDGET(event), "avatarW1");
+    // g_signal_connect (event, "button-release-event", G_CALLBACK(guardarPFP), NULL);
 
-    g_signal_connect (GTK_WIDGET(event), "button-release-event", G_CALLBACK(guardarPFP), NULL);
-    event = gtk_builder_get_object (builder, "AvatarM2");
-    gtk_widget_set_name(GTK_WIDGET(event), "avatarW2");
+    // event = gtk_builder_get_object (builder, "AvatarM2");
+    // gtk_widget_set_name(GTK_WIDGET(event), "avatarW2");
+    // g_signal_connect (event, "button-release-event", G_CALLBACK(guardarPFP), NULL);
 
-    g_signal_connect (GTK_WIDGET(event), "button-release-event", G_CALLBACK(guardarPFP), NULL);
-    event = gtk_builder_get_object (builder, "AvatarM3");
-    gtk_widget_set_name(GTK_WIDGET(event), "avatarW3");
+    // event = gtk_builder_get_object (builder, "AvatarM3");
+    // gtk_widget_set_name(GTK_WIDGET(event), "avatarW3");
+    // g_signal_connect (event, "button-release-event", G_CALLBACK(guardarPFP), NULL);
 
-    g_signal_connect (GTK_WIDGET(event), "button-release-event", G_CALLBACK(guardarPFP), NULL);
-    event = gtk_builder_get_object (builder, "AvatarM4");
-    gtk_widget_set_name(GTK_WIDGET(event), "avatarW4");
+    // event = gtk_builder_get_object (builder, "AvatarM4");
+    // gtk_widget_set_name(GTK_WIDGET(event), "avatarW4");
+    // g_signal_connect (event, "button-release-event", G_CALLBACK(guardarPFP), NULL);
 
-    g_signal_connect (GTK_WIDGET(event), "button-release-event", G_CALLBACK(guardarPFP), NULL);
-    event = gtk_builder_get_object (builder, "AvatarM5");
-    gtk_widget_set_name(GTK_WIDGET(event), "avatarW5");
+    // event = gtk_builder_get_object (builder, "AvatarM5");
+    // gtk_widget_set_name(GTK_WIDGET(event), "avatarW5");
+    // g_signal_connect (event, "button-release-event", G_CALLBACK(guardarPFP), NULL);
 
-    g_signal_connect (GTK_WIDGET(event), "button-release-event", G_CALLBACK(guardarPFP), NULL);
+    // event = gtk_builder_get_object (builder, "AvatarH1");
+    // gtk_widget_set_name(GTK_WIDGET(event), "avatarM1");
+    // g_signal_connect (event, "button-release-event", G_CALLBACK(guardarPFP), NULL);
 
-    event = gtk_builder_get_object (builder, "AvatarH1");
-    g_signal_connect (GTK_WIDGET(event), "button-release-event", G_CALLBACK(guardarPFP), NULL);
-    gtk_widget_set_name(GTK_WIDGET(event), "avatarM1");
+    // event = gtk_builder_get_object (builder, "AvatarH2");
+    // gtk_widget_set_name(GTK_WIDGET(event), "avatarM2");
+    // g_signal_connect (event, "button-release-event", G_CALLBACK(guardarPFP), NULL);
 
-    event = gtk_builder_get_object (builder, "AvatarH2");
-    g_signal_connect (GTK_WIDGET(event), "button-release-event", G_CALLBACK(guardarPFP), NULL);
-    gtk_widget_set_name(GTK_WIDGET(event), "avatarM2");
+    // event = gtk_builder_get_object (builder, "AvatarH3");
+    // gtk_widget_set_name(GTK_WIDGET(event), "avatarM3");
+    // g_signal_connect (event, "button-release-event", G_CALLBACK(guardarPFP), NULL);
 
-    event = gtk_builder_get_object (builder, "AvatarH3");
-    g_signal_connect (GTK_WIDGET(event), "button-release-event", G_CALLBACK(guardarPFP), NULL);
-    gtk_widget_set_name(GTK_WIDGET(event), "avatarM3");
+    // event = gtk_builder_get_object (builder, "AvatarH4");
+    // gtk_widget_set_name(GTK_WIDGET(event), "avatarM4");
+    // g_signal_connect (event, "button-release-event", G_CALLBACK(guardarPFP), NULL);
 
-    event = gtk_builder_get_object (builder, "AvatarH4");
-    g_signal_connect (GTK_WIDGET(event), "button-release-event", G_CALLBACK(guardarPFP), NULL);
-    gtk_widget_set_name(GTK_WIDGET(event), "avatarM4");
+    // event = gtk_builder_get_object (builder, "AvatarH5");
+    // gtk_widget_set_name(GTK_WIDGET(event), "avatarM5");
+    // g_signal_connect (event, "button-release-event", G_CALLBACK(guardarPFP), NULL);
 
-    event = gtk_builder_get_object (builder, "AvatarH5");
-    g_signal_connect (GTK_WIDGET(event), "button-release-event", G_CALLBACK(guardarPFP), NULL);
-    gtk_widget_set_name(GTK_WIDGET(event), "avatarM5");
-
-    Global = gtk_builder_get_object (builder, "Next");
-    g_signal_connect (Global, "clicked", G_CALLBACK(restartMenuPerfiles), builder);
+    // button = gtk_builder_get_object (builder, "Next");
+    // g_signal_connect (button, "clicked", G_CALLBACK(restartMenuPerfiles), NULL);
 
     gtk_widget_show_all(GTK_WIDGET(window)) ;
 }
 void menuSeleccionJugadores(GObject *buttonInit){
-  // FIXME: Enviar 2 widgets con una struct para poder enviar los datos
-  // TODO: Te quedaste en implementar una GLIST
   g_print("Menu Cuantos Jugadores\n");
     /*   Cierre de ventana   */
   GtkWindow *windowClose;
@@ -443,33 +456,35 @@ void menuSeleccionJugadores(GObject *buttonInit){
   /*   Obtencion de Objetos   */
   GObject *Eventimg,*eventBot, *eventHuman;
   GtkWidget *window;
-  GList *events;
-
   window = GTK_WIDGET(gtk_builder_get_object (builder, "SelectPlayer"));
   // g_signal_connect (window, "destroy", G_CALLBACK (gtk_main_quit), NULL);
 
+  eventBot = gtk_builder_get_object (builder, "Bot");
+  gtk_widget_set_name(GTK_WIDGET(eventBot), "Bot");
+  g_signal_connect (eventBot, "button-release-event", G_CALLBACK(modoJuego), NULL);
+  events = g_list_insert(events, eventBot, 0);
+
+  eventHuman = gtk_builder_get_object (builder, "Human");
+  gtk_widget_set_name(GTK_WIDGET(eventHuman), "Human");
+  g_signal_connect (eventHuman, "button-release-event", G_CALLBACK(modoJuego), NULL);
+  events = g_list_insert(events, eventHuman, 1);
+
   Eventimg = gtk_builder_get_object (builder, "1P");
   gtk_widget_set_name(GTK_WIDGET(Eventimg), "1P");
-  g_signal_connect (GTK_WIDGET(Eventimg), "button-release-event", G_CALLBACK(numJugadores), events);
+  g_signal_connect (Eventimg, "button-release-event", G_CALLBACK(numJugadores), NULL);
+
   Eventimg = gtk_builder_get_object (builder, "2P");
   gtk_widget_set_name(GTK_WIDGET(Eventimg), "2P");
-  g_signal_connect (GTK_WIDGET(Eventimg), "button-release-event", G_CALLBACK(numJugadores), events);
+  g_signal_connect (Eventimg, "button-release-event", G_CALLBACK(numJugadores), NULL);
+
   Eventimg = gtk_builder_get_object (builder, "3P");
   gtk_widget_set_name(GTK_WIDGET(Eventimg), "3P");
-  g_signal_connect (GTK_WIDGET(Eventimg), "button-release-event",  G_CALLBACK(numJugadores), events);
+  g_signal_connect (Eventimg, "button-release-event",  G_CALLBACK(numJugadores), NULL);
+
   Eventimg = gtk_builder_get_object (builder, "4P");
   gtk_widget_set_name(GTK_WIDGET(Eventimg), "4P");
-  g_signal_connect (GTK_WIDGET(Eventimg), "button-release-event", G_CALLBACK(numJugadores), events);
+  g_signal_connect (Eventimg, "button-release-event", G_CALLBACK(numJugadores), NULL);
 
-  eventBot = gtk_builder_get_object (builder, "Bot");
-  eventHuman = gtk_builder_get_object (builder, "Human");
-  g_list_insert(events, eventBot, 0);
-  g_list_insert(events, eventHuman, 1);
-
-  gtk_widget_set_name(GTK_WIDGET(eventBot), "Bot");
-  g_signal_connect (eventBot, "button-release-event", G_CALLBACK(modoJuego), events);
-  gtk_widget_set_name(GTK_WIDGET(eventHuman), "Human");
-  g_signal_connect (eventHuman, "button-release-event", G_CALLBACK(modoJuego), events);
 
   gtk_widget_show_all(GTK_WIDGET(window));
   gtk_widget_hide(GTK_WIDGET(eventBot));
@@ -477,10 +492,14 @@ void menuSeleccionJugadores(GObject *buttonInit){
 }
 
 /*   Funciones para el PRE-JUEGO   */
-void numJugadores(GObject *buttonInit, GList *events){
-
-  GObject *eventImg, *box, *img,*eventHuman, *eventBot;
+void numJugadores(GObject *buttonInit){
+  GObject *eventHuman=NULL, *eventBot=NULL;
   const gchar* data = gtk_widget_get_name(GTK_WIDGET(buttonInit));
+
+  eventBot = events->data;
+  events = events->next;
+  eventHuman = events->data;
+
   DB_Menu.numJugadores = atoi(&data[0]);
   g_print("Numero de Jugadores = %d!\n", DB_Menu.numJugadores);
 
@@ -489,7 +508,6 @@ void numJugadores(GObject *buttonInit, GList *events){
     gtk_widget_show(GTK_WIDGET(eventHuman));
   }
   gtk_widget_show(GTK_WIDGET(eventBot));
-  g_object_unref(builder);
 }
 void modoJuego(GObject *vsImg){
   const gchar* data = gtk_widget_get_name(GTK_WIDGET(vsImg));
@@ -499,30 +517,33 @@ void modoJuego(GObject *vsImg){
   else if (strcmp(data, "Human") == 0){
     strcpy(DB_Menu.modJuego, "Human");
   }
-  restartMenuPerfiles(vsImg);
+  g_print("\n\t =>%s!\n",gtk_widget_get_name(GTK_WIDGET(vsImg)));
+  menuPerfiles(vsImg);
+  *apRegistrados+=1;
+  g_print("\n\t =>%s!\n",gtk_widget_get_name(GTK_WIDGET(vsImg)));
+  // FIXME: La segunda llamada al parecer tiene una modificacion en el XML o la estructura del UI. Debido a que del EventBox no encuentra el padre de este.
+  menuPerfiles(vsImg);
+  *apRegistrados+=1;
 }
-int restartMenuPerfiles (GObject *object){
-
+void restartMenuPerfiles (GObject *object){
+  // Si o si debe ser un boton, porque viene del MENU_PERFILES
   if (GTK_IS_BUTTON(object)) {
       if (*apRegistrados < DB_Menu.numJugadores) {
         menuPerfiles(object);
         *apRegistrados+=1;
       } else
         goGame = 1;
-  } else{
-    menuPerfiles(object);
-    *apRegistrados+=1;
   }
   if (goGame == 1) {
     // Limpia el constructor de las ventanas anteriores
     g_object_unref(builder);
-    startGame(Global);
+    startGame(GTK_WIDGET(object), GINT_TO_POINTER(1));
   }
 }
 void guardarApodo(GObject *entryText){
   const gchar *apodo =  gtk_entry_get_text  (GTK_ENTRY(entryText));
   g_print("Apodo Jugador %d : %s\n", *apRegistrados, apodo);
-  strcpy(DB_Menu.jugadores[*apRegistrados].apodo, apodo);
+  strcpy(DB_Menu.jugadores[*apRegistrados-1].apodo, apodo);
 }
 void guardarPFP(GObject *playerImg){
   g_print("Player %d\n", *apRegistrados);
@@ -530,10 +551,8 @@ void guardarPFP(GObject *playerImg){
   char path[MAX_PATH] = "..\\assets\\profiles\\";
   strcat(path, nameImg);
   strcat(path, ".png");
-  strcpy(DB_Menu.jugadores[*apRegistrados].src, path);
+  strcpy(DB_Menu.jugadores[*apRegistrados-1].src, path);
 
-  GObject *box;
-  GtkWidget *window = gtk_widget_get_toplevel(GTK_WIDGET(playerImg));
   GtkWidget *parent  = gtk_widget_get_parent(GTK_WIDGET(playerImg));
   parent = gtk_widget_get_parent(GTK_WIDGET(parent));
 
@@ -554,6 +573,8 @@ void guardarPFP(GObject *playerImg){
     }
   }
   g_list_free(children);
+  g_list_free(l);
+  g_list_free(k);
 }
 
 // Menus de Como JUgar
@@ -637,42 +658,57 @@ void menuObjetivo(GObject *buttonInit) {
 
 /*   Funciones para el JUEGO   */
 // UNICAMENTE LOGICO
-void startGame(){
-  int endGame;
-  /* Hay de 3;
-   * 1. Hacemos la variable global
-   * 2. La colocamos en la estructura
-   * 3. Por medio de las señales la enviamos a la funcion como un apuntador (gpointer user_data)
-  */
+void startGame(GtkWidget *widget, gpointer *aPstatus){
+  int status = GPOINTER_TO_INT(aPstatus);
   int turno = 0; // Debe de ser de 0 a al numero de Jugadores - 1.
 
+  GtkWidget *windowGame;
+  gpointer aPturno = GINT_TO_POINTER(turno);
+  /*
+    status 0 - Inicia el Juego
+    status 1 - Comprobacion y puesta en mesa
+    status 2 - Fin del juego
+  */
+    // FIXME: CRASH!
+    // Esperar la accion del GTK, ya estara redireccionada a la funcion correspondiente.
+    // No podemos seguir linealmente porque el boton de la interfaz ya redirecciona a la funcion de validacion.
+    // Aparte de que es necesario hacer que la funcion sea un CALLBACK, ya que si no nunca regresara a esta funcion.
 
-  GtkWindow *windowGame;
-  /*  Funciones de una sola vez   */
-  repartirCartasInicio();
-  windowGame = interfazJuego();
+    // Podemos solucionarlo con un control de variable
+    // TODO: Por medio de un switch podemos hacer un handle (control de variable)
 
-  while(endGame == 0){
+  switch (status) {
+  case 1:
+    repartirCartasInicio();
+    windowGame = interfazJuego(widget);
+    break;
+
+  case 2:
     jugador[turno].numCartasTotales = totalCartasUsuario(turno);
     if(jugador[turno].numCartasTotales > 0){
       g_print("Aun existen cartas!\n");
-      // Esperar la accion del GTK, ya estara redireccionada a la funcion correspondiente.
-      // FIXME: CRASH!
-      // No podemos seguir linealmente porque el boton de la interfaz ya redirecciona a la funcion de validacion.
-      // Aparte de que es necesario hacer que la funcion sea un CALLBACK, ya que si no nunca regresara a esta funcion.
-      /* Continuando como si no lo integraramos con interfaz */
-      comparacion_num_color();
-      colocarCarta();
-    } else {
-      endGame = 1;
-    }
-    if(turno < DB_Menu.numJugadores-1)
+
+      if (comparacion_num_color(widget, aPturno) == 1)
+        colocarCarta();
+      else
+        // Nunca deberia de llegar aqui!
+        desabilitarCarta();
+    } else
+      startGame(NULL, GINT_TO_POINTER(3));
+
+    if(turno < (DB_Menu.numJugadores-1))
       turno++;
     else
       turno = 0;
-  }
-  finjuego();
+    break;
 
+  case 3:
+    finjuego();
+    break;
+  default:
+    g_print("\nError! Estoy recibiendo un status... %d", status);
+    break;
+  }
 }
 
 void repartirCartasInicio(){
@@ -682,11 +718,11 @@ void repartirCartasInicio(){
   char* srcSimple;
 
   while(jugadoresRepartidos < DB_Menu.numJugadores){
-    randNum = rand() % 54;
-    end=0, lengSRC=0; j=0;
-    memset(srcSimple,'\0', sizeof(srcSimple));
-
     for(int i=0; i<7; i++){
+      randNum = rand() % 54;
+      end=0, lengSRC=0; j=0;
+      memset(srcSimple,'\0', sizeof(srcSimple));
+
       strcpy(jugador[jugadoresRepartidos].baraja[i].srcCompleto, image_names[randNum]);
       strcpy(tempString, image_names[randNum]);
       srcSimple = strtok(tempString, "\\");
@@ -826,7 +862,7 @@ void repartirCartasInicio(){
           end=1;
         break;
         default:
-          if(cardInit.srcSimple != '\0')
+          if(cardInit.srcSimple[0] != '\0')
             j++;
           else
             end=1;
@@ -884,33 +920,53 @@ void repartirCartasInicio(){
       g_print("Carta Inicial - %s - %d\n",cardInit.color, cardInit.numero);
 }
 
-void comparacion_num_color(GtkWidget *card) {
+int comparacion_num_color(GtkWidget *card, gpointer aPturno) {
+  int turno = GPOINTER_TO_INT(aPturno);
+
   // DE ACUERDO A LA SELECCION DEL USUARIO
-  // ID = 4
   // El ID es la carta que selecciono el usuario de su baraja
   // Este ID es proporcionado por el GLADE / INTERFAZ
   // Puedes hacer un GLIST para recuperar los child de la GBOX
   // Y reasignar el ID a las cartas, asi poder compararlas.
-  int ID = gtk_widget_get_name(GTK_WIDGET(card));
 
-  // TODO: Tambien hacer dinamica la validacion de datos.
-  /*   JUGADOR 1   */
-  // Si es del NUMERO O tambien del COLOR
-  if(strcmp(jugador.baraja[ID].color, cardInit.color)==0 || jugador1.baraja[ID].numero==cardInit.numero) {
+  const char *IDChar = gtk_widget_get_name(GTK_WIDGET(card));
+  char* tempChar;
+  strcpy(tempChar, IDChar);
+  int ID = atoi(tempChar);
+  int indexCartaComida;
+
+  strtok(tempChar, "_");
+  strtok(NULL, "_");
+
+  if(strcmp(jugador[turno].baraja[ID].color, cardInit.color)==0 || jugador[turno].baraja[ID].numero==cardInit.numero) {
      printf("\nTiro de carta");
+     return 1;
   } else { // Si no es del NUMERO O No es del COLOR
     do {
       printf("\nCOME DEL MAZO");
       int random = rand() % 54;
       char *CartaComida = image_names[random];
+
       //TODO: Guardar la informacion de la carta a la estructura del JUGADOR
       //TODO: Asiganar el indice de la ultima carta comida
       //      Se obtiene el indice con alguna funcion que funcione como un STRLEN del GBOX
-      int indexCartaComida = 0;
+
+      indexCartaComida = 0;
+
       // FUNCION: Obtener la informacion de la carta random que comio
       // DATO [CartaComida]: La carta random que comio
-    } while (jugador1.baraja[indexCartaComida].numero==cardInit.numero || strcmp(jugador1.baraja[indexCartaComida].color,cardInit.color)==0);
+    } while (jugador[turno].baraja[indexCartaComida].numero==cardInit.numero || strcmp(jugador[turno].baraja[indexCartaComida].color,cardInit.color)==0);
+    return 1;
   }
+  return 0;
+}
+
+void colocarCarta() {
+  g_print("Se coloca la carta");
+}
+
+void desabilitarCarta() {
+  g_print("Se desabilita la carta");
 }
 
 int totalCartasUsuario(int turno){
@@ -921,14 +977,22 @@ int totalCartasUsuario(int turno){
     return i;
 }
 
-void finjuego() {
+void finjuego(){
   g_print("Pasar a Menu de Victoria/Derrota/Puntuaciones\n");
 }
 
 // UNICAMENTE INTERFAZ
-GtkWindow* interfazJuego(){
+GtkWidget* interfazJuego(GtkWidget *widget){
+
+  GtkWidget *windowClose = GTK_WIDGET(gtk_widget_get_toplevel(GTK_WIDGET(widget)));
+  if(GTK_IS_WINDOW(windowClose)){
+    g_print("Se cierra: %s\n", gtk_window_get_title (GTK_WINDOW (windowClose)));
+    gtk_widget_destroy(GTK_WIDGET(windowClose));
+  }
+
   g_print("\t> Inicio del juego - INTERFAZ\n");
-  GObject *window, *boxA, *boxAB, *event, *img;
+  GObject *boxA, *boxAB, *event, *img;
+  GtkWidget *window;
   GError *error = NULL;
 
   builder = gtk_builder_new ();
@@ -942,55 +1006,60 @@ GtkWindow* interfazJuego(){
   boxA = gtk_builder_get_object(builder, "Arriba");
   boxAB = gtk_builder_get_object(builder, "Abajo");
 
+  /* Lo que debe de enviar de la click de la carta:
+   * - El objeto (EventBox)
+   * - Que estatus mandar, en todo caso es el 2
+  */
+
   event = gtk_builder_get_object(builder, "Ab1");
   img = gtk_builder_get_object(builder, "IAb1");
-  g_signal_connect(event, "button-release-event", G_CALLBACK(ocultarValidar), img);
+  g_signal_connect(event, "button-release-event", G_CALLBACK(startGame), GINT_TO_POINTER(2));
   g_signal_connect (event, "enter_notify_event", G_CALLBACK (motionCard), img);
   g_signal_connect (event, "leave_notify_event", G_CALLBACK (motionCard), img);
   gtk_image_set_from_file(GTK_IMAGE(img), jugador[0].baraja[0].srcCompleto);
 
   event = gtk_builder_get_object(builder, "Ab2");
   img = gtk_builder_get_object(builder, "IAb2");
+  g_signal_connect(event, "button-release-event", G_CALLBACK(startGame), GINT_TO_POINTER(2));
   g_signal_connect (event, "enter_notify_event", G_CALLBACK (motionCard), img);
   g_signal_connect (event, "leave_notify_event", G_CALLBACK (motionCard), img);
-  g_signal_connect(event, "button-release-event", G_CALLBACK(ocultarValidar), img);
   gtk_image_set_from_file(GTK_IMAGE(img), jugador[0].baraja[1].srcCompleto);
 
 
   event = gtk_builder_get_object(builder, "Ab3");
   img = gtk_builder_get_object(builder, "IAb3");
+  g_signal_connect(event, "button-release-event", G_CALLBACK(startGame), GINT_TO_POINTER(2));
   g_signal_connect (event, "enter_notify_event", G_CALLBACK (motionCard), img);
   g_signal_connect (event, "leave_notify_event", G_CALLBACK (motionCard), img);
-  g_signal_connect(event, "button-release-event", G_CALLBACK(ocultarValidar), img);
   gtk_image_set_from_file(GTK_IMAGE(img), jugador[0].baraja[2].srcCompleto);
 
 
   event = gtk_builder_get_object(builder, "Ab4");
   img = gtk_builder_get_object(builder, "IAb4");
+  g_signal_connect(event, "button-release-event", G_CALLBACK(startGame), GINT_TO_POINTER(2));
   g_signal_connect (event, "enter_notify_event", G_CALLBACK (motionCard), img);
   g_signal_connect (event, "leave_notify_event", G_CALLBACK (motionCard), img);
-  g_signal_connect(event, "button-release-event", G_CALLBACK(ocultarValidar), img);
   gtk_image_set_from_file(GTK_IMAGE(img), jugador[0].baraja[3].srcCompleto);
 
   event = gtk_builder_get_object(builder, "Ab5");
   img = gtk_builder_get_object(builder, "IAb5");
+  g_signal_connect(event, "button-release-event", G_CALLBACK(startGame), GINT_TO_POINTER(2));
   g_signal_connect (event, "enter_notify_event", G_CALLBACK (motionCard), img);
   g_signal_connect (event, "leave_notify_event", G_CALLBACK (motionCard), img);
-  g_signal_connect(event, "button-release-event", G_CALLBACK(ocultarValidar), img);
   gtk_image_set_from_file(GTK_IMAGE(img), jugador[0].baraja[4].srcCompleto);
 
   event = gtk_builder_get_object(builder, "Ab6");
   img = gtk_builder_get_object(builder, "IAb6");
+  g_signal_connect(event, "button-release-event", G_CALLBACK(startGame), GINT_TO_POINTER(2));
   g_signal_connect (event, "enter_notify_event", G_CALLBACK (motionCard), img);
   g_signal_connect (event, "leave_notify_event", G_CALLBACK (motionCard), img);
-  g_signal_connect(event, "button-release-event", G_CALLBACK(ocultarValidar), img);
   gtk_image_set_from_file(GTK_IMAGE(img), jugador[0].baraja[5].srcCompleto);
 
   event = gtk_builder_get_object(builder, "Ab7");
   img = gtk_builder_get_object(builder, "IAb7");
+  g_signal_connect(event, "button-release-event", G_CALLBACK(startGame), GINT_TO_POINTER(2));
   g_signal_connect (event, "enter_notify_event", G_CALLBACK (motionCard), img);
   g_signal_connect (event, "leave_notify_event", G_CALLBACK (motionCard), img);
-  g_signal_connect(event, "button-release-event", G_CALLBACK(ocultarValidar), img);
   gtk_image_set_from_file(GTK_IMAGE(img), jugador[0].baraja[6].srcCompleto);
 
   img = gtk_builder_get_object(builder, "IJuego");
@@ -999,7 +1068,7 @@ GtkWindow* interfazJuego(){
   event = gtk_builder_get_object(builder, "Comida");
   // TODO: Falta linkear eventos
 
-  gtk_widget_show_all(GTK_WIDGET(window));
+  gtk_widget_show_all(window);
   return window;
 }
 
