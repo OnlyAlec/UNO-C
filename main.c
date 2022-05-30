@@ -160,18 +160,18 @@ void motionCard(GObject *, GdkEventConfigure *, gpointer );
 void returnMain(GObject*, gpointer*);
 // static void destroyWindow(GtkWidget *, GdkEventConfigure *, gpointer *);
 // Menus
-void menuPerfiles(GObject *);
+void menuPerfiles(GtkWidget *);
 void menuLocalOnline(GObject *, gpointer);
 void menuComoJugar(GObject *, gpointer);
 void menuInstrucciones(GObject*);
 void menuObjetivo(GObject*);
-void menuSeleccionJugadores(GObject *);
+void menuSeleccionJugadores(GtkWidget *);
 //PreJuego
-void numJugadores(GObject *);
-void modoJuego(GObject *);
-void restartMenuPerfiles (GObject *);
-void guardarApodo(GObject *);
-void guardarPFP(GObject *);
+void numJugadores(GtkWidget *);
+void modoJuego(GtkWidget *);
+void restartMenuPerfiles (GtkWidget *);
+void guardarApodo(GtkWidget *);
+void guardarPFP(GtkWidget *);
 // Juego Principal
 void startGame(GtkWidget *, gpointer *);
 void repartirCartasInicio();
@@ -200,6 +200,7 @@ int main (int argc, char *argv[]) {
   /*   Limpieza   */
   gst_element_set_state (play, GST_STATE_NULL);
   gst_object_unref (GST_OBJECT (play));
+  system("pause");
   return 0;
 }
 
@@ -379,72 +380,71 @@ void menuLocalOnline(GObject *buttonInit, gpointer user_data){
 
   gtk_widget_show_all(GTK_WIDGET(window));
 }
-void menuPerfiles(GObject *buttonInit){
+void menuPerfiles(GtkWidget *buttonInit){
     /*   Cierre de ventana   */
     GtkWindow *windowClose={0};
     windowClose = GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(buttonInit)));
-    g_print("\t=> %s", gtk_widget_get_name(GTK_WIDGET(windowClose)));
     if(GTK_IS_WINDOW(windowClose)){
       g_print("\nSe cierra: %s\n", gtk_window_get_title (GTK_WINDOW (windowClose)));
       gtk_widget_destroy(GTK_WIDGET(windowClose));
     }
 
     g_print("\nMenu Perfiles\n");
-    GObject *window;
-    window = gtk_builder_get_object (builder, "ProfileBuild");
+    GtkWidget *window;
+    window = GTK_WIDGET(gtk_builder_get_object (builder, "ProfileBuild"));
     // g_signal_connect (window, "destroy", G_CALLBACK (destroyWindow), NULL);
 
     /*   Obtencion de Objetos   */
-    GObject *text=NULL, *event=NULL, *button=NULL;
-    // text = gtk_builder_get_object (builder, "NamePlayer");
-    // g_signal_connect (text, "focus_out_event", G_CALLBACK(guardarApodo), NULL);
+    GObject *text, *eventGlade, *button;
+    text = gtk_builder_get_object (builder, "NamePlayer");
+    g_signal_connect (text, "focus_out_event", G_CALLBACK(guardarApodo), NULL);
 
-    // event = gtk_builder_get_object (builder, "AvatarM1");
-    // gtk_widget_set_name(GTK_WIDGET(event), "avatarW1");
-    // g_signal_connect (event, "button-release-event", G_CALLBACK(guardarPFP), NULL);
+    eventGlade = gtk_builder_get_object (builder, "AvatarM1");
+    gtk_widget_set_name(GTK_WIDGET(eventGlade), "avatarW1");
+    g_signal_connect (eventGlade, "button-release-event", G_CALLBACK(guardarPFP), NULL);
 
-    // event = gtk_builder_get_object (builder, "AvatarM2");
-    // gtk_widget_set_name(GTK_WIDGET(event), "avatarW2");
-    // g_signal_connect (event, "button-release-event", G_CALLBACK(guardarPFP), NULL);
+    eventGlade = gtk_builder_get_object (builder, "AvatarM2");
+    gtk_widget_set_name(GTK_WIDGET(eventGlade), "avatarW2");
+    g_signal_connect (eventGlade, "button-release-event", G_CALLBACK(guardarPFP), NULL);
 
-    // event = gtk_builder_get_object (builder, "AvatarM3");
-    // gtk_widget_set_name(GTK_WIDGET(event), "avatarW3");
-    // g_signal_connect (event, "button-release-event", G_CALLBACK(guardarPFP), NULL);
+    eventGlade = gtk_builder_get_object (builder, "AvatarM3");
+    gtk_widget_set_name(GTK_WIDGET(eventGlade), "avatarW3");
+    g_signal_connect (eventGlade, "button-release-event", G_CALLBACK(guardarPFP), NULL);
 
-    // event = gtk_builder_get_object (builder, "AvatarM4");
-    // gtk_widget_set_name(GTK_WIDGET(event), "avatarW4");
-    // g_signal_connect (event, "button-release-event", G_CALLBACK(guardarPFP), NULL);
+    eventGlade = gtk_builder_get_object (builder, "AvatarM4");
+    gtk_widget_set_name(GTK_WIDGET(eventGlade), "avatarW4");
+    g_signal_connect (eventGlade, "button-release-event", G_CALLBACK(guardarPFP), NULL);
 
-    // event = gtk_builder_get_object (builder, "AvatarM5");
-    // gtk_widget_set_name(GTK_WIDGET(event), "avatarW5");
-    // g_signal_connect (event, "button-release-event", G_CALLBACK(guardarPFP), NULL);
+    eventGlade = gtk_builder_get_object (builder, "AvatarM5");
+    gtk_widget_set_name(GTK_WIDGET(eventGlade), "avatarW5");
+    g_signal_connect (eventGlade, "button-release-event", G_CALLBACK(guardarPFP), NULL);
 
-    // event = gtk_builder_get_object (builder, "AvatarH1");
-    // gtk_widget_set_name(GTK_WIDGET(event), "avatarM1");
-    // g_signal_connect (event, "button-release-event", G_CALLBACK(guardarPFP), NULL);
+    eventGlade = gtk_builder_get_object (builder, "AvatarH1");
+    gtk_widget_set_name(GTK_WIDGET(eventGlade), "avatarM1");
+    g_signal_connect (eventGlade, "button-release-event", G_CALLBACK(guardarPFP), NULL);
 
-    // event = gtk_builder_get_object (builder, "AvatarH2");
-    // gtk_widget_set_name(GTK_WIDGET(event), "avatarM2");
-    // g_signal_connect (event, "button-release-event", G_CALLBACK(guardarPFP), NULL);
+    eventGlade = gtk_builder_get_object (builder, "AvatarH2");
+    gtk_widget_set_name(GTK_WIDGET(eventGlade), "avatarM2");
+    g_signal_connect (eventGlade, "button-release-event", G_CALLBACK(guardarPFP), NULL);
 
-    // event = gtk_builder_get_object (builder, "AvatarH3");
-    // gtk_widget_set_name(GTK_WIDGET(event), "avatarM3");
-    // g_signal_connect (event, "button-release-event", G_CALLBACK(guardarPFP), NULL);
+    eventGlade = gtk_builder_get_object (builder, "AvatarH3");
+    gtk_widget_set_name(GTK_WIDGET(eventGlade), "avatarM3");
+    g_signal_connect (eventGlade, "button-release-event", G_CALLBACK(guardarPFP), NULL);
 
-    // event = gtk_builder_get_object (builder, "AvatarH4");
-    // gtk_widget_set_name(GTK_WIDGET(event), "avatarM4");
-    // g_signal_connect (event, "button-release-event", G_CALLBACK(guardarPFP), NULL);
+    eventGlade = gtk_builder_get_object (builder, "AvatarH4");
+    gtk_widget_set_name(GTK_WIDGET(eventGlade), "avatarM4");
+    g_signal_connect (eventGlade, "button-release-event", G_CALLBACK(guardarPFP), NULL);
 
-    // event = gtk_builder_get_object (builder, "AvatarH5");
-    // gtk_widget_set_name(GTK_WIDGET(event), "avatarM5");
-    // g_signal_connect (event, "button-release-event", G_CALLBACK(guardarPFP), NULL);
+    eventGlade = gtk_builder_get_object (builder, "AvatarH5");
+    gtk_widget_set_name(GTK_WIDGET(eventGlade), "avatarM5");
+    g_signal_connect (eventGlade, "button-release-event", G_CALLBACK(guardarPFP), NULL);
 
-    // button = gtk_builder_get_object (builder, "Next");
-    // g_signal_connect (button, "clicked", G_CALLBACK(restartMenuPerfiles), NULL);
+    button = gtk_builder_get_object (builder, "Next");
+    g_signal_connect (button, "clicked", G_CALLBACK(restartMenuPerfiles), NULL);
 
-    gtk_widget_show_all(GTK_WIDGET(window)) ;
+    gtk_widget_show_all(window) ;
 }
-void menuSeleccionJugadores(GObject *buttonInit){
+void menuSeleccionJugadores(GtkWidget *buttonInit){
   g_print("Menu Cuantos Jugadores\n");
     /*   Cierre de ventana   */
   GtkWindow *windowClose;
@@ -485,14 +485,13 @@ void menuSeleccionJugadores(GObject *buttonInit){
   gtk_widget_set_name(GTK_WIDGET(Eventimg), "4P");
   g_signal_connect (Eventimg, "button-release-event", G_CALLBACK(numJugadores), NULL);
 
-
   gtk_widget_show_all(GTK_WIDGET(window));
   gtk_widget_hide(GTK_WIDGET(eventBot));
   gtk_widget_hide(GTK_WIDGET(eventHuman));
 }
 
 /*   Funciones para el PRE-JUEGO   */
-void numJugadores(GObject *buttonInit){
+void numJugadores(GtkWidget *buttonInit){
   GObject *eventHuman=NULL, *eventBot=NULL;
   const gchar* data = gtk_widget_get_name(GTK_WIDGET(buttonInit));
 
@@ -509,7 +508,7 @@ void numJugadores(GObject *buttonInit){
   }
   gtk_widget_show(GTK_WIDGET(eventBot));
 }
-void modoJuego(GObject *vsImg){
+void modoJuego(GtkWidget *vsImg){
   const gchar* data = gtk_widget_get_name(GTK_WIDGET(vsImg));
   g_print("VS = %s!\n", data);
   if (strcmp(data, "Bot") == 0)
@@ -517,22 +516,21 @@ void modoJuego(GObject *vsImg){
   else if (strcmp(data, "Human") == 0){
     strcpy(DB_Menu.modJuego, "Human");
   }
-  g_print("\n\t =>%s!\n",gtk_widget_get_name(GTK_WIDGET(vsImg)));
-  menuPerfiles(vsImg);
-  *apRegistrados+=1;
-  g_print("\n\t =>%s!\n",gtk_widget_get_name(GTK_WIDGET(vsImg)));
-  // FIXME: La segunda llamada al parecer tiene una modificacion en el XML o la estructura del UI. Debido a que del EventBox no encuentra el padre de este.
-  menuPerfiles(vsImg);
-  *apRegistrados+=1;
+  restartMenuPerfiles(vsImg);
 }
-void restartMenuPerfiles (GObject *object){
-  // Si o si debe ser un boton, porque viene del MENU_PERFILES
+void restartMenuPerfiles (GtkWidget *object){
+  /* Redefino el builder porque al parecer despues de la segunda vuelta esta direccion se pierde o se hace in valida*/
+  builder = gtk_builder_new ();
+  gtk_builder_add_from_file (builder, "XML/PreJuego.glade", NULL);
   if (GTK_IS_BUTTON(object)) {
       if (*apRegistrados < DB_Menu.numJugadores) {
         menuPerfiles(object);
         *apRegistrados+=1;
       } else
         goGame = 1;
+  } else {
+    menuPerfiles(object);
+    *apRegistrados+=1;
   }
   if (goGame == 1) {
     // Limpia el constructor de las ventanas anteriores
@@ -540,12 +538,12 @@ void restartMenuPerfiles (GObject *object){
     startGame(GTK_WIDGET(object), GINT_TO_POINTER(1));
   }
 }
-void guardarApodo(GObject *entryText){
+void guardarApodo(GtkWidget *entryText){
   const gchar *apodo =  gtk_entry_get_text  (GTK_ENTRY(entryText));
   g_print("Apodo Jugador %d : %s\n", *apRegistrados, apodo);
   strcpy(DB_Menu.jugadores[*apRegistrados-1].apodo, apodo);
 }
-void guardarPFP(GObject *playerImg){
+void guardarPFP(GtkWidget *playerImg){
   g_print("Player %d\n", *apRegistrados);
   const gchar* nameImg = gtk_widget_get_name(GTK_WIDGET(playerImg));
   char path[MAX_PATH] = "..\\assets\\profiles\\";
