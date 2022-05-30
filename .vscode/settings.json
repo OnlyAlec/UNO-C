@@ -16,6 +16,7 @@
         "glib.h": "c",
         "gtestutils.h": "c",
         "malloc.h": "c",
-        "mm_malloc.h": "c"
+        "mm_malloc.h": "c",
+        "random": "c"
     },
 }
