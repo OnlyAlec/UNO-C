@@ -1,0 +1,27 @@
+TODO:
+- Hacer funciones:
+  vibrarCarta(GtkWidget *);
+  comerCartas();
+
+FIXME:
+- Si es solo 1 jugador, debe pasar el BOT
+  startGame();
+- Enlazar esta estructura con la del menu
+  struct DatosJugador
+
+//----------------------SCRIPT PARA COMER CARTAS
+do {
+  printf("\nCOME DEL MAZO");
+  int random = rand() % 54;
+  /*  Se obtiene la informacion de la carta comida, se guarda en la estructura del jugador*/
+  getInfoCarta(turno, random);
+  /* Una vez guardada en la estructura, debes de agregar el elemento a la interfaz
+   * Agrega un hijo a la CAJA PADRE
+   * => Este debe de tener un ID aumentado del total del cartas (EG. P1_*numCardTotales+1*)
+   * Centra la CAJA PADRE
+   * Mostrar la carta
+  */
+
+ //TODO: Implementacion anterior
+ /* Para el WHILE, se toma como indice de la baraja el NUMERO de CARTAS TOTALES porque es la ultima que tiene, siendo que es la que comio! */
+} while (jugador[turno].baraja[jugador[turno].numCartasTotales].numero==cardInit.numero || strcmp(jugador[turno].baraja[indexCartaComida].color,cardInit.color)==0);
